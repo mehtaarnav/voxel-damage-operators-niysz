@@ -309,3 +309,73 @@ volume-weighted mean of the local-thickness field, or a direct
 opening-based granulometry — then re-run this same convergence ladder
 against it. A gate is only as trustworthy as the stability of the number it
 tests, and that has not yet been demonstrated for `cpsd_r50max`.
+
+---
+
+## Step 2 — candidate-metric correlation pre-check (2026-08-10)
+
+Three size measures on the platform-v2 structures. (b) and (c) computed for
+all 15 structures (10 widened points); (a) is the expensive 4-point anchor
+reused from the ladder. Data: `cpsd_candidate_precheck.csv`.
+
+| structure set | raw-EDT dev | generator-radius dev | local-thickness dev (sizes=300) |
+|---|---|---|---|
+| intermediate (1.33×, 5 seeds) | −0.79 to −1.09% | −1.70 to −2.13% | not computed |
+| high (2.0×, 5 seeds) | −1.77 to −2.47% | −5.18 to −6.79% | −9.56%, −7.54% (2 seeds) |
+
+**Correlation, raw-EDT vs generator radius (n=10): r = +0.9934.** Direction
+and ranking track almost perfectly. **But the scale does not:** offset
++2.44 pp (sd 1.56), i.e. raw EDT reports roughly **one third** of the
+body-size change that the generator actually applied.
+
+**Raw-EDT vs true local thickness (2-point anchor):** offsets **+7.38 pp**
+and **+5.52 pp** — large and inconsistent. Absolute values differ ~3×
+(raw-EDT ≈ 150 nm vs local thickness ≈ 458 nm), because they measure
+different things: mean distance-to-surface over all Ni voxels, versus the
+radius of the largest sphere *covering* each voxel.
+
+### Verdict: raw EDT is NOT a legitimate stand-in — but the check found something better
+
+**Raw EDT fails the step-2 criterion.** It does not track true local
+thickness in magnitude (understates ~4×), and with only 2 anchor points
+there is no basis to claim otherwise.
+
+**The more useful finding is the third column.** `generator_radius_deviation`
+is *exact* — it is the radius the generator actually applied, not an estimate
+— and it is free for every synthetic structure. Against that ground truth:
+
+- **local thickness (sizes=300) overstates** the true body shrink:
+  −9.56% / −7.54% vs a true −6.25% / −5.58%.
+- **raw EDT understates** it: −2.18% / −2.02% vs the same truth.
+
+So the two image-based candidates bracket the ground truth from opposite
+sides, and **neither is faithful**. That is worth knowing before any of them
+is adopted as a gate: the incumbent metric was not merely unstable, it was
+also biased high against a known answer.
+
+### Step 3 decision — flagged, not silently taken
+
+Per instruction, opening-based granulometry is **not** being adopted as a
+free fallback: it samples the same discrete radii that broke
+`cpsd_r50max`, so it would need the identical 5-point non-monotone ladder
+before it could be trusted, at comparable cost.
+
+Recommendation (not implemented, awaiting review):
+
+1. **Use `generator_radius_deviation` as the synthetic-side gate.** It is
+   exact, free, has no resolution parameter, and cannot exhibit the
+   binned-median instability. It is the honest answer to "did particle
+   bodies shrink, and by how much" for a structure we generated.
+2. **Accept that it cannot be the cross-comparison metric** — a real anode
+   has no generator radius. The real-vs-synthetic comparison needs its own
+   separately-validated measure, or should be reframed.
+3. **Worth flagging about the original gate design:** the ±5% ceiling
+   compares a *controlled within-structure perturbation* (base → widened,
+   same seed) against a ceiling that would be grounded in *between-ROI
+   natural variability* of real anodes. Those are different quantities.
+   Even with a perfect metric, that comparison may not be the right one.
+   Raising this rather than quietly building on it.
+
+**Nothing locked; P2-C still not re-gated.** Steps 4–5 (recompute both
+sides at matched resolution, propose ceiling, re-gate) remain blocked on
+choosing a metric that demonstrably converges.
