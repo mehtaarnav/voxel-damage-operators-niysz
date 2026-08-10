@@ -1,0 +1,13 @@
+gate,scope,n_pass,n,passed
+G1a_phi_ni,per-structure,15,15,True
+G1b_phi_ysz,per-structure,15,15,True
+G1c_ni_perc,per-structure,15,15,True
+G1d_ysz_perc,per-structure,15,15,True
+G1e_particles,per-structure,15,15,True
+G1f_neck_p10,per-structure,15,15,True
+G1g_size_order,class median,1,1,True
+G1h_ysz_lenscale_meanEDT,class median,1,1,True
+G1i_order,class median,1,1,True
+G1i_ratio_ge10,class median,1,1,True
+G1i_anti_outlier,leave-one-seed-out,1,1,True
+G1i_combined,class median,1,1,True
