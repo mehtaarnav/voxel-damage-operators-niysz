@@ -16,3 +16,4 @@ __pycache__/
 
 # Project 2 scratch: temporary label memmaps from percolation_summary_lowmem
 out/project2/_tmp/
+out/project2/_cache/
