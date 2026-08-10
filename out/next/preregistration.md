@@ -623,3 +623,65 @@ range** and is superseded by:
 > **TPB magnitude is not yet a real-data-comparable quantity.** Real-data TPB
 > comparability belongs with the deferred calibration-phase obligations
 > (see P2-C2, §0f).
+
+## 0h. Closure record (2026-08-10) — p10-group causal question CLOSED
+
+Appended after the p10-group experiment and its null autopsy were reviewed and
+accepted as final. **This section closes the pre-registered causal question. No
+result below is provisional, and no branch remains open.**
+
+### 1. Primary outcome, as classified against the frozen branches
+
+- **No resolvable effect.** Group mean transition midpoints 8.54 (base) /
+  8.50 (1.33x) / 8.50 (2.00x); differences -0.040 rounds, below one standard
+  error (~0.09) and ~25x below the 1.0-round threshold (Section 0g/1).
+- **Inconclusive as a universal scientific hypothesis; a clean model-specific
+  null under Platform v2 + frozen D4.**
+- **NOT Path A. NOT a weak positive. NOT a pipeline artifact** -- the last
+  established by direct provenance verification of the widened masks
+  (67,803 voxels differ; 46 of 224 necks changed; balanced add/remove counts).
+
+### 2. Null-autopsy branch and its refinement
+
+- Pre-registered branch: **A -- "the intervention does not survive to the
+  collapse boundary under D4."**
+- Refinement supported directly by the diagnostics: **the intervention is
+  bypassed, not merely erased.** D4loc shows collapse is driven by global
+  surface-area-mediated thinning; the voxels removed at the transition step are
+  one-voxel-deep surface material (mean 20.00 / 20.02 nm against an all-voxel
+  background median of 28.28 nm), not the lower-tail neck population.
+- **Therefore, under this D4 parameterization, lower-tail neck widening has no
+  mechanistic lever on the percolation-loss threshold.**
+
+### 3. D2 -- recorded as degenerate
+
+The EDT percentile proxy over all Ni voxels is **invalid for this question**. It
+is dominated by the one-voxel surface shell and returns identical values for
+structures already verified to differ, including at n_rounds=0. **Recorded as
+degenerate / non-informative. It is not evidence for or against the
+intervention in either direction, and it will not be fixed or re-run.**
+
+### 4. Branch C -- not supported
+
+**Hidden continuous benefit is not supported.** All continuous diagnostics
+(retained volume, spanning-cluster size, spanning fraction of original) are null
+or point marginally in the *unfavourable* direction, within noise. Recorded
+explicitly so the null cannot later be re-read as an under-powered positive.
+
+### 5. Scope of closure
+
+The p10-group causal experiment is **closed for Platform v2 + frozen D4**. Not
+run, and not part of this project: further generator variants, alternative or
+neck-selective damage models, Family C, real-data calibration, opening
+granulometry, any third image-based size metric, instruction item 6, and any
+repair of D2. **D4 and the generator are not to be modified under this
+pre-registration.**
+
+Deferred obligations remain named rather than dropped: **P2-C2** (image-based
+size comparability) and real-data TPB comparability, both belonging to a
+calibration phase this project does not enter.
+
+### 6. Write-up
+
+Final documents: `out/writeup/PATH_B_MEMO.md`, `out/writeup/PAPER_OUTLINE.md`,
+`out/writeup/REPRODUCIBILITY_MANIFEST.md`.
