@@ -1,0 +1,6 @@
+seed,reconstruction_identical,ysz_untouched_by_damage,ni_loss_becomes_pore,all_metrics_finite,P_span_post,P_reach_post,n_clusters_post,tpb_post,voxels_added_expand,voxels_removed_erosion,voxels_removed_islands,voxels_pre,voxels_post,n_components_before_island_removal
+0,True,True,True,True,1.0,1.0,1,16.83294953592203,97720,436631,26327,1137116,771878,17670
+1,True,True,True,True,1.0,1.0,1,16.69320678581992,97991,437351,30337,1132730,763033,17497
+2,True,True,True,True,1.0,1.0,1,16.389513880086195,100956,437934,28496,1124513,759039,17797
+3,True,True,True,True,1.0,1.0,1,16.246470120139154,102383,434763,27683,1126712,766649,17317
+4,True,True,True,True,1.0,1.0,1,16.936381177729892,100495,440724,24287,1163964,799448,17496

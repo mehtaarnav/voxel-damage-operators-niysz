@@ -494,3 +494,64 @@ during Phase 2/3 execution must be logged in
 `out/next/phase2_calibration_report.md` / `out/next/phase3_experiment_report.md`
 with an explicit "deviation from preregistration" note and reason — not
 silently applied.
+
+## 0f. Amendments after platform-v2 qualification review (frozen 2026-08-10)
+
+**1. Gate P2-C is split into two independently-tracked gates.**
+
+- **P2-C1 — mass-conservation / generator self-consistency: PASS.**
+  Φ_Ni deviation ≤0.02%; net voxel residuals ±44 on ~30,000 moved; no seed
+  near the radius floor (>92% headroom); radius shrink −5.17% to −6.79% at
+  high ratio; p50 ratio exactly 1.00; node counts stable (97–101 vs base
+  97–98); P_span intact (1.000) throughout.
+- **P2-C2 — measured image-based size comparability: DEFERRED** to the
+  real-data calibration phase. `cpsd_r50max` failed convergence
+  (non-monotone; no resolution with both seeds <0.5 pp); raw EDT is not
+  equivalent to either local thickness or generator radius (~3× compressed);
+  local thickness is itself unconverged; opening granulometry would require
+  the same 5-point ladder cost; and there is **no Platform-v2 consumer** for
+  this metric. Carried forward as a named open obligation, not dropped.
+
+**2. `generator_radius_deviation` language, qualified.** It is exact ground
+truth **for the input sphere-radius parameter only** — not for what an
+image-based thickness measurement of the final rasterized structure would
+read. Neck material near junctions changes what a thickness metric sees,
+especially as necks widen. See `out/platform_v2/design_memo.md`.
+
+**3. Internal generator-radius guardrail (model-sanity limit, NOT derived
+from real ROI variability).**
+
+| | threshold | ≈ sphere-volume loss |
+|---|---|---|
+| target | shrink ≤ **7%** | ~20% |
+| hard review | shrink ≤ **10%** | ~27% |
+
+Beyond that the intervention risks becoming *particle-body thinning* rather
+than *neck-tail widening*. Current structures (−5.17% to −6.79%) pass; this
+guardrail **has not yet constrained anything**. If a future design point
+needs to exceed 7%, that is a trigger to revisit the justification — not a
+checkbox to tick.
+
+**4. Causal-interpretation obligation, pre-registered NOW (before any
+retention result exists).** The high-ratio intervention couples two changes:
+lower-tail neck widening **and** ~5–7% primary sphere shrinkage. Any future
+retention-benefit finding tied to achieved p10 ratio **must not be attributed
+to neck widening alone** until the radius-shrink confound is addressed by one
+of:
+
+- sensitivity analysis across achieved p10 ratio *and* radius deviation;
+- a **matched-shrink control** structure with no lower-tail widening, Φ_Ni
+  preserved by placing the compensated Ni volume outside the lower tail;
+- a widened structure with reduced radius shrink, if feasible.
+
+Sensitivity analysis alone is **necessary but may not be sufficient** if
+radius deviation and achieved p10 ratio remain collinear. If the effect
+cannot be separated from radius shrinkage, the claim is downgraded to:
+*"mass-conservative lower-tail neck widening with accompanying particle-body
+shrinkage affects retention."*
+
+**5. Scientific-question language updated.** The intervention is described as
+*"mass-conservative lower-tail neck widening at fixed Ni loading, accompanied
+by a known ~5–7% primary sphere shrinkage."* The phrase **"fixed particle
+size" is not to be used** unless a validated size condition backs it — which,
+per P2-C2, it currently does not.
