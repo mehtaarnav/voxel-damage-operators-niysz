@@ -1,6 +1,14 @@
 # Project 2 — Mechanism Fingerprinting of Ni-YSZ Redox Degradation
 ## Design Memo and Pilot Spec
 
+> **UPDATE 2026-08-10 — Step 0 has since been executed.** The premise audit in
+> §0 is resolved: the gate returned **outcome (a)**, coarse worst on YSZ, with
+> `coarse_post` YSZ failing to percolate entirely (`P_span = 0.0000`). My
+> expectation of outcome (c) (saturation) was **wrong**. Two gates below are
+> amended as a result — **G1-d is revised and G1-i is added** — see
+> `STEP0_REPORT.md` §5, which takes precedence over §4.2 of this memo where they
+> conflict. The rest of the memo stands as written.
+
 **Status: design memo only.** No damage code was written, no operator was
 implemented, no dataset was generated. The feasibility numbers in §1 and §2 come
 from a throwaway geometry-and-percolation probe using the *existing* frozen

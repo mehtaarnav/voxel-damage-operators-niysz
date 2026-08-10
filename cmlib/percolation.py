@@ -228,3 +228,110 @@ def percolation_summary(mask: np.ndarray, axis: int = 0, connectivity: int = 6,
             out[f"percolates_axis{ax}"] = bool(a & b)
 
     return out
+
+
+# ---------------------------------------------------------------------------
+# LOW-MEMORY VARIANT (added 2026-08-10, Project 2 Step 0)
+#
+# WHY. `percolation_summary` materialises the int32 label array in RAM. On the
+# largest real stack (coarse_post, 1368 x 1630 x 500 = 1.115 Gvoxel) that array
+# alone is 4.46 GB, on top of the 1.115 GB boolean mask. On a 16.8 GB machine
+# with other applications resident this reliably exhausts memory -- which is
+# the direct cause of the truncated `out/phase5/*.csv` artifacts committed in
+# 47b08ee (1 of 6 rows written, retention file empty).
+#
+# WHAT IS DIFFERENT. Only *where the label array lives* and *how it is
+# reduced*: labels are written to a disk-backed memmap, and the per-label voxel
+# counts are accumulated over slabs instead of by one whole-array bincount.
+# THE DEFINITIONS ARE UNCHANGED -- same structuring element, same both-face /
+# either-face rules, same denominators. `test_percolation_lowmem_equivalence`
+# in scripts/project2/step0_percolation.py asserts exact agreement against
+# `percolation_summary` on randomised volumes before any real stack is run.
+# ---------------------------------------------------------------------------
+
+def percolation_summary_lowmem(mask: np.ndarray, axis: int = 0,
+                               connectivity: int = 6,
+                               check_other_axes: bool = True,
+                               workdir: str = None,
+                               slab: int = 32) -> dict:
+    """Disk-backed equivalent of `percolation_summary`, identical in output.
+
+    `workdir` is where the temporary int32 label memmap is created (defaults to
+    the system temp dir); it is deleted on exit. `slab` is the number of
+    axis-0 planes reduced per bincount step.
+    """
+    import os
+    import tempfile
+
+    n_phase = int(mask.sum())
+    out = {
+        "axis": axis,
+        "connectivity": connectivity,
+        "n_phase_voxels": n_phase,
+        "volume_fraction": n_phase / mask.size if mask.size else 0.0,
+        "n_clusters": 0,
+        "percolates": False,
+        "n_spanning_clusters": 0,
+        "P_span": 0.0,
+        "P_reach": 0.0,
+        "P_largest": 0.0,
+    }
+    if check_other_axes:
+        for ax in range(mask.ndim):
+            if ax != axis:
+                out[f"percolates_axis{ax}"] = False
+    if n_phase == 0:
+        return out
+
+    d = workdir or tempfile.gettempdir()
+    os.makedirs(d, exist_ok=True)
+    fh, path = tempfile.mkstemp(suffix=".labels.i4", dir=d)
+    os.close(fh)
+    try:
+        labels = np.memmap(path, dtype=np.int32, mode="w+", shape=mask.shape)
+        n = ndi.label(mask, structure=structure_for(connectivity),
+                      output=labels)
+        n = int(n)
+        out["n_clusters"] = n
+        if n == 0:
+            return out
+
+        # per-label voxel counts, accumulated slab-wise
+        counts = np.zeros(n + 1, dtype=np.int64)
+        for z0 in range(0, mask.shape[0], slab):
+            block = np.asarray(labels[z0:z0 + slab])
+            counts += np.bincount(block.ravel(), minlength=n + 1)
+        counts[0] = 0
+        out["P_largest"] = float(counts[1:].max() / n_phase)
+
+        lo = set(int(v) for v in np.unique(np.asarray(
+            np.take(labels, 0, axis=axis))) if v > 0)
+        hi = set(int(v) for v in np.unique(np.asarray(
+            np.take(labels, labels.shape[axis] - 1, axis=axis))) if v > 0)
+        both = np.array(sorted(lo & hi), dtype=np.int64)
+        either = np.array(sorted(lo | hi), dtype=np.int64)
+
+        if both.size:
+            out["percolates"] = True
+            out["n_spanning_clusters"] = int(both.size)
+            out["P_span"] = float(counts[both].sum() / n_phase)
+        if either.size:
+            out["P_reach"] = float(counts[either].sum() / n_phase)
+
+        if check_other_axes:
+            for ax in range(mask.ndim):
+                if ax == axis:
+                    continue
+                a = set(int(v) for v in np.unique(np.asarray(
+                    np.take(labels, 0, axis=ax))) if v > 0)
+                b = set(int(v) for v in np.unique(np.asarray(
+                    np.take(labels, labels.shape[ax] - 1, axis=ax))) if v > 0)
+                out[f"percolates_axis{ax}"] = bool(a & b)
+
+        del labels
+    finally:
+        try:
+            os.remove(path)
+        except OSError:
+            pass
+    return out

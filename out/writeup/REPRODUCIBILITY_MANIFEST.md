@@ -127,23 +127,35 @@ conclusion changes**, and nothing in Phase 3/4 was retroactively altered.
 | volume fractions, phase profiles | `out/phase2/phase2_volume_fractions.csv`, `phase2_profile_*.csv`, `phase2_label_inventory.csv` |
 | SNOW networks, marker sensitivity, REV | `out/phase3/phase3_graphs_8.0um.csv`, `phase3_snow_8.0um_rmax4.csv`, `phase3c_rmax_sensitivity.csv`, `phase3a_rev.csv`, `diag_skeleton.csv` |
 | TPB, metrics, particle size, λ₂ scaling | `out/phase4/phase4b_tpb_full_stacks.csv`, `phase4c_metrics_per_{roi,anode}_8.0um.csv`, `phase4d_particles.csv` |
-| **outcome — retained percolation** | **`out/phase6/phase6_comparison_table.csv`** (columns `P_span_pre/post`, `P_span_retained`, `P_reach_retained`, `tpb_retained`) — **not** `out/phase5/*`, see the defect note below |
+| **outcome — retained percolation** | **`out/phase5/phase5_percolation.csv`**, **`phase5_retention.csv`** (complete, all 6 stacks — regenerated 2026-08-10, see below), and **`out/phase6/phase6_comparison_table.csv`** |
 | **comparison table and rankings** | **`out/phase6/phase6_comparison_table.csv`**, `phase6_rankings.csv` |
 
-> **Committed-artifact defect (found 2026-08-10 during Project 2 scoping; not
-> previously disclosed).** The two Phase 5 CSVs are **truncated**:
-> `phase5_percolation.csv` contains **1 of 6 rows** (`coarse_pre` only) and
-> `phase5_retention.csv` is **empty (2 bytes)** — evidently an interrupted write
-> in commit `47b08ee`. **No reported conclusion is affected**: every retention
-> number quoted in `REPORT.md` and in `PATH_B_MEMO.md` §A is carried by
-> `out/phase6/phase6_comparison_table.csv`, which is complete for all three
-> anodes and whose values (`P_span_retained` = 0.6795 / 0.8547 / 0.9470;
-> `tpb_retained` = 0.7993 / 0.7460 / 0.5897) match the report exactly. The
-> defect is one of **regenerability, not correctness**: a reproducer following
-> the Phase 5 route will not find the per-stack outcome table and must either
-> re-run `phase5_percolation.py` (~10 s per stack, full stacks) or read the
-> aggregated values from Phase 6. Recorded rather than silently repaired,
-> because re-running would alter a committed artifact from the original study.
+> **Committed-artifact defect — FOUND AND RESOLVED 2026-08-10.**
+>
+> *Defect as committed in `47b08ee`:* `phase5_percolation.csv` held **1 of 6
+> rows** (`coarse_pre` only), `phase5_retention.csv` was **empty (2 bytes)**,
+> and `phase5_percolation.png` was drawn from that single sample.
+>
+> *Root cause (corrected).* My first note inferred an interrupted write. **That
+> was wrong.** The pattern — one row, empty retention, *and a valid figure* — is
+> exactly what `phase5_percolation.py --samples coarse_pre` produces; a crash
+> would not have written the figure. The likely cause is a single-sample
+> invocation whose output was committed as if it were the full run.
+>
+> *Resolution.* All three artifacts regenerated complete by
+> `scripts/project2/step0_percolation.py` (+ `step0_figures.py`), original
+> column schema preserved. **The regenerated values reproduce the frozen Phase 6
+> table exactly** — `P_span_retained` = 0.679503 / 0.854693 / 0.946965, agreeing
+> to 0.00 × 10⁰ — confirming the defect was **regenerability, not correctness**,
+> and that every number in `REPORT.md` and `PATH_B_MEMO.md` §A stands unchanged.
+>
+> *Durable fixes, so it cannot recur.* (i) `percolation_summary_lowmem` in
+> `cmlib/percolation.py` — disk-backed label memmap plus slab-wise reduction,
+> needed because the largest stack requires a 4.46 GB int32 label array;
+> definitions unchanged and **equivalence to the frozen `percolation_summary` is
+> asserted on 14 randomised volumes × 3 axes before any stack is read**.
+> (ii) Every CSV is rewritten after each sample, so an interruption now yields a
+> valid short file rather than a malformed one.
 
 **Part B**
 

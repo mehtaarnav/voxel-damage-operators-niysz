@@ -13,3 +13,6 @@ out/graphs/
 __pycache__/
 *.pyc
 *.part
+
+# Project 2 scratch: temporary label memmaps from percolation_summary_lowmem
+out/project2/_tmp/
