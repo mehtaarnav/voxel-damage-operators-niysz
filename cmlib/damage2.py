@@ -199,3 +199,80 @@ def tpb_density_um2(ni_mask, ysz_mask, voxel_nm=20.0):
     length_nm = total * voxel_nm
     volume_nm3 = float(np.prod(shape)) * voxel_nm ** 3
     return length_nm / volume_nm3 * 1e6
+
+
+# ---------------------------------------------------------------- O5
+# Volume-conserving Ni agglomeration. Frozen in
+# out/project2/PREREG_AMENDMENT_O5.md (commit cb2ca49) BEFORE any run.
+#
+# WHY IT EXISTS. Step 2 failed on a magnitude, not an ordering: O1 destroyed
+# 99.5% of TPB by the time Ni lost percolation, against a real fine anode that
+# RETAINS 79.9% of its TPB at its worst Ni-percolation retention. Every Step 2
+# operator removes volume, yet real Phi_Ni RISES in the coarse anode (+0.0146).
+# The missing mechanism is redistribution, not removal.
+#
+# FLOW DIRECTION. In the dewetting/agglomeration regime matter moves from high
+# mean curvature to low: a neck of radius r has mean curvature 1/(2r) against a
+# particle of radius R with 1/R, so for r < R/2 material leaves the neck and
+# joins the particle -- the Rayleigh-type instability that thins necks and grows
+# bodies. Local Ni density in a W_CURV window is used as the curvature proxy:
+# low density at a surface voxel means locally convex, i.e. high curvature.
+#
+# NO LARGEST-COMPONENT PRUNING, unlike O1/D4 and deliberately so: O1's pruning
+# modelled Ni loss; O5 models Ni redistribution, and deleting disconnected Ni
+# would destroy the volume conservation that is the entire point. Disconnected
+# Ni stays in the mask and is simply not counted by P_span.
+O5_MOVE_FRAC, O5_W_CURV = 0.05, 5
+
+
+def apply_o5(ni_mask, ysz_mask, n_rounds, seed,
+             move_frac=O5_MOVE_FRAC, w_curv=O5_W_CURV):
+    """O5 -- volume-conserving, curvature-driven Ni agglomeration."""
+    ni = ni_mask.copy()
+    n0 = int(ni.sum())
+    rng = np.random.default_rng(seed)
+    moved_total = 0
+    for _ in range(max(0, int(n_rounds))):
+        non_ni = ~ni
+        surface = ni & ndi.binary_dilation(non_ni, STRUCT6)
+        pore = non_ni & ~ysz_mask
+        front = pore & ndi.binary_dilation(ni, STRUCT6)
+        n_surf = int(surface.sum())
+        if n_surf == 0:
+            break
+        k = int(round(move_frac * n_surf))
+        if k <= 0:
+            break
+        dens = ndi.uniform_filter(ni.astype(np.float32), size=w_curv)
+        jit = rng.random(ni.shape).astype(np.float32) * 1e-3
+
+        si = np.flatnonzero(surface.ravel())
+        sv = dens.ravel()[si] + jit.ravel()[si]
+        k_rm = min(k, si.size)
+        rm = si[np.argpartition(sv, k_rm - 1)[:k_rm]]        # lowest density
+
+        fi = np.flatnonzero(front.ravel())
+        if fi.size == 0:
+            break
+        fv = dens.ravel()[fi] + jit.ravel()[fi]
+        k_add = min(k_rm, fi.size)
+        add = fi[np.argpartition(-fv, k_add - 1)[:k_add]]    # highest density
+        rm = rm[:k_add]
+
+        flat = ni.ravel()
+        flat[rm] = False
+        flat[add] = True
+        moved_total += k_add
+    n1 = int(ni.sum())
+    return ni, dict(voxels_pre=n0, voxels_post=n1,
+                    voxels_moved=moved_total,
+                    volume_error=abs(n1 - n0) / max(n0, 1))
+
+
+def ni_ysz_interface_area_vox(ni_mask, ysz_mask):
+    """Count of Ni/YSZ shared voxel faces -- the perimeter TPB lives on."""
+    n = 0
+    for ax in range(3):
+        for sh in (1, -1):
+            n += int((ni_mask & np.roll(ysz_mask, sh, axis=ax)).sum())
+    return n

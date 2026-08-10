@@ -139,5 +139,33 @@ check("single triple line matches analytic", abs(t - expect) / expect < 0.05,
 check("TPB zero when a phase is absent",
       tpb_density_um2(niT, np.zeros_like(yszT), vox) == 0.0)
 
+
+print("== O5 volume conservation, monotone volume, YSZ untouched ==")
+from cmlib.damage2 import apply_o5  # noqa: E402
+big = np.zeros((60, 60, 60), bool)
+zz2, yy2, xx2 = np.ogrid[:60, :60, :60]
+big |= ((zz2 - 15) ** 2 + (yy2 - 30) ** 2 + (xx2 - 30) ** 2) < 100
+big |= ((zz2 - 45) ** 2 + (yy2 - 30) ** 2 + (xx2 - 30) ** 2) < 100
+big[15:46, 29:32, 29:32] = True   # thin neck; free span is z=25..35
+yszB = np.zeros_like(big)
+yszB[:, :, 55:] = True
+pre_neck = int(big[27:34, 29:32, 29:32].sum())
+o5, d5 = apply_o5(big, yszB, 6, 4)
+check("O5 conserves volume <=0.5%", d5["volume_error"] <= 0.005,
+      f"({d5['voxels_pre']} -> {d5['voxels_post']}, err={d5['volume_error']:.5f})")
+check("O5 actually moved voxels", d5["voxels_moved"] > 0,
+      f"({d5['voxels_moved']})")
+check("O5 leaves YSZ untouched", bool(not (o5 & yszB).any()))
+post_neck = int(o5[27:34, 29:32, 29:32].sum())
+check("O5 thins the neck", post_neck < pre_neck, f"{pre_neck} -> {post_neck}")
+o5a, da = apply_o5(big, yszB, 0, 4)
+check("O5 n=0 is a no-op", bool(np.array_equal(o5a, big)))
+errs = []
+for nr in (1, 3, 6, 10):
+    _, dd = apply_o5(big, yszB, nr, 9)
+    errs.append(dd["volume_error"])
+check("O5 volume error stays <=0.5% at all n", max(errs) <= 0.005,
+      f"max={max(errs):.5f}")
+
 print("\n" + ("ALL TESTS PASS" if not fails else f"FAILURES: {fails}"))
 sys.exit(1 if fails else 0)

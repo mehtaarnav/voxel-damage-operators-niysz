@@ -37,7 +37,10 @@ ROOT = os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__)
 sys.path.insert(0, ROOT)
 sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
 
-from cmlib.damage2 import apply_o1, apply_o2, apply_o3, tpb_density_um2  # noqa: E402
+from cmlib.damage2 import (  # noqa: E402
+    apply_o1, apply_o2, apply_o3, apply_o5, ni_ysz_interface_area_vox,
+    tpb_density_um2,
+)
 from cmlib.percolation import percolation_summary  # noqa: E402
 from step2_build_cache import CFG, ORDER, SEEDS, build, load, path  # noqa: E402
 
@@ -46,13 +49,17 @@ VOXEL_NM, AXIS, CONN = 20.0, 0, 6
 DAMAGE_SEEDS = [300, 301, 302]
 BRACKET_LO, BRACKET_HI = 1, 20
 R1_GRID = [1, 2, 3, 5, 8, 13, 20]
-OP_PHASE = {"O1": "Ni", "O2": "Ni", "O3": "YSZ"}
+OP_PHASE = {"O1": "Ni", "O2": "Ni", "O3": "YSZ", "O5": "Ni"}
+TPB_PRISTINE = None
 
 
 def damage(op, st, n, dseed, region_slices=None):
     """Apply one operator at intensity n. Returns (ni, ysz, info)."""
     if op == "O1":
         ni, info = apply_o1(st["ni"], st["ysz"], n, dseed)
+        return ni, st["ysz"], info
+    if op == "O5":
+        ni, info = apply_o5(st["ni"], st["ysz"], n, dseed)
         return ni, st["ysz"], info
     if op == "O2":
         ni, info = apply_o2(st["ni"], st["regions"], st["throat_conns"],
@@ -103,7 +110,61 @@ def metrics(op, st, n, dseed, rs=None):
         ysz_n_clusters=yp["n_clusters"],
         tpb_um2=tpb_density_um2(ni, ysz, VOXEL_NM),
         ni_vol_loss_frac=1.0 - ni.sum() / max(st["ni"].sum(), 1),
-        ysz_vol_loss_frac=1.0 - ysz.sum() / max(st["ysz"].sum(), 1))
+        ysz_vol_loss_frac=1.0 - ysz.sum() / max(st["ysz"].sum(), 1),
+        phi_ni_conservation_err=abs(ni.sum() - st["ni"].sum()) / max(st["ni"].sum(), 1),
+        ni_ysz_interface_vox=ni_ysz_interface_area_vox(ni, ysz),
+        ni_ysz_interface_vox_pristine=ni_ysz_interface_area_vox(st["ni"], st["ysz"]),
+        tpb_pristine_um2=tpb_density_um2(st["ni"], st["ysz"], VOXEL_NM))
+
+
+def o5scope():
+    """Scoping sweep for O5 with the CORRECTED n_secondary rule.
+
+    Step 2's rule took the midpoint of the shallowest transition bracket, which
+    landed PAST the transition for O1 and saturated the secondary at zero. The
+    corrected rule (PREREG_AMENDMENT_O5 sec 5) takes the LOWER endpoint of the
+    bracket BELOW the shallowest transition, guaranteeing a non-saturating point.
+    """
+    rows = []
+    for name in ORDER:
+        st = load(name, 0)
+        for n in R1_GRID:
+            t0 = time.time()
+            ni, ysz, info = damage("O5", st, n, DAMAGE_SEEDS[0])
+            r = percolation_summary(ni, axis=AXIS, connectivity=CONN,
+                                    check_other_axes=False)
+            rows.append(dict(op="O5", analog=name, n_rounds=n, phase="Ni",
+                             P_span=r["P_span"],
+                             vol_err=info["volume_error"],
+                             tpb=tpb_density_um2(ni, ysz, VOXEL_NM),
+                             seconds=round(time.time() - t0, 1)))
+            print(f"  O5 {name:7s} n={n:2d} P_span={r['P_span']:.4f} "
+                  f"TPB={rows[-1]['tpb']:6.3f} volerr={info['volume_error']:.5f} "
+                  f"[{rows[-1]['seconds']}s]", flush=True)
+            pd.DataFrame(rows).to_csv(os.path.join(OUT, "step2_o5_scope.csv"),
+                                      index=False)
+    df = pd.DataFrame(rows)
+    firsts = []
+    for name in ORDER:
+        s2 = df[df.analog == name].sort_values("n_rounds")
+        lost = s2[s2.P_span <= 0.0]
+        if len(lost):
+            firsts.append(int(lost.n_rounds.iloc[0]))
+    if not firsts:
+        nsec = 5
+    else:
+        shallow = min(firsts)
+        grid = [g for g in R1_GRID if g < shallow]
+        below = [g for g in grid if g < (grid[-1] if grid else shallow)]
+        nsec = int(np.clip(below[-1] if below else (grid[0] if grid else 5),
+                           2, 15))
+    prev = json.load(open(os.path.join(OUT, "step2_n_secondary.json")))
+    prev["O5"] = nsec
+    json.dump(prev, open(os.path.join(OUT, "step2_n_secondary.json"), "w"),
+              indent=1)
+    print(f"  n_secondary[O5] = {nsec}  (shallowest transition at "
+          f"{min(firsts) if firsts else 'none'})")
+    return 0
 
 
 def r1scope():
@@ -193,11 +254,14 @@ def run_arm(op, p_tag="main", outfile=None, nsec=None):
 def main():
     ap = argparse.ArgumentParser()
     ap.add_argument("--mode", required=True,
-                    choices=["r1scope", "main", "control", "buildctrl"])
+                    choices=["r1scope", "main", "control", "buildctrl",
+                             "o5scope"])
     ap.add_argument("--op", default="O1")
     a = ap.parse_args()
     if a.mode == "r1scope":
         return r1scope()
+    if a.mode == "o5scope":
+        return o5scope()
     nsec = json.load(open(os.path.join(OUT, "step2_n_secondary.json")))
     if a.mode == "buildctrl":
         pc = json.load(open(os.path.join(OUT, "step2_p_control.json")))
