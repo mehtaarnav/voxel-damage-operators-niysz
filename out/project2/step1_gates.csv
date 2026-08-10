@@ -1,0 +1,14 @@
+gate,scope,n_pass,n,passed
+G1a_phi_ni,per-structure,14,15,False
+G1b_phi_ysz,per-structure,15,15,True
+G1c_ni_perc,per-structure,15,15,True
+G1d_ysz_perc,per-structure,15,15,True
+G1e_particles,per-structure,15,15,True
+G1f_neck_p10,per-structure,15,15,True
+G1g_size_order,class,1,1,True
+G1h_ysz_lenscale,class,0,1,False
+G1h_ysz_lenscale_meanEDT,class (supplementary),1,1,True
+G1i_ysz_P_span_order,class,1,1,True
+G1i_ysz_nclusters_raw,class,0,1,False
+G1i_ysz_nclusters_density,class (supplementary),0,1,False
+G1i_combined,class,0,1,False
