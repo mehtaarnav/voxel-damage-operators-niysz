@@ -1,0 +1,34 @@
+============================================================================
+(A) CONVERGENCE — successive-resolution change, target <0.5 pp
+============================================================================
+
+--- seed 0 (high-ratio T=11.00vox) ---
+  sizes=  25: base= 414.19 high= 401.21 dev= -3.13%
+  sizes=  50: base= 438.21 high= 402.93 dev= -8.05%  step_change=4.92 pp
+  sizes= 100: base= 450.35 high= 414.16 dev= -8.04%  step_change=0.01 pp
+  sizes= 200: base= 456.45 high= 414.53 dev= -9.18%  step_change=1.15 pp
+  sizes= 300: base= 458.49 high= 414.65 dev= -9.56%  step_change=0.38 pp
+
+--- seed 1 (high-ratio T=11.00vox) ---
+  sizes=  25: base= 452.46 high= 396.37 dev=-12.40%
+  sizes=  50: base= 453.44 high= 398.06 dev=-12.21%  step_change=0.18 pp
+  sizes= 100: base= 453.91 high= 419.56 dev= -7.57%  step_change=4.65 pp
+  sizes= 200: base= 454.14 high= 425.20 dev= -6.37%  step_change=1.19 pp
+  sizes= 300: base= 458.08 high= 423.52 dev= -7.55%  step_change=1.17 pp
+
+  successive-step changes (pp):
+    seed 0: ->  50   4.92 pp  still moving
+    seed 0: -> 100   0.01 pp  OK
+    seed 0: -> 200   1.15 pp  still moving
+    seed 0: -> 300   0.38 pp  OK
+    seed 1: ->  50   0.18 pp  OK
+    seed 1: -> 100   4.65 pp  still moving
+    seed 1: -> 200   1.19 pp  still moving
+    seed 1: -> 300   1.17 pp  still moving
+
+  first ladder step where BOTH seeds change <0.5 pp: NONE — metric still moving
+
+============================================================================
+(B) RESOLUTION-MATCHED RECOMPUTE of all 15 synthetic structures at sizes=100
+    (real-ROI study used sizes=100; qualification run used 25)
+============================================================================

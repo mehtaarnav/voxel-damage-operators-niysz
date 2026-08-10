@@ -231,3 +231,81 @@ individual numbers were less trustworthy than they looked.**
 
 **No option has been implemented.** Reporting both findings first, as
 instructed.
+
+---
+
+## Convergence verification (2026-08-10) — **FAILED. Nothing locked.**
+
+Per instruction, before locking `CPSD_SIZES_DEFAULT` or any revised ceiling:
+(a) confirm the real-ROI and synthetic c-PSD used matching resolution, and
+(b) run one more ladder step (sizes=300) to confirm the metric has stopped
+moving (<0.5 pp between successive resolutions).
+
+### (a) Resolution mismatch — confirmed, and it was real
+
+The 16 real ROIs used **sizes=100**. The platform-v2 qualification run used
+**sizes=25** (the default at the time it executed; the default was raised only
+afterwards). The two sides of the comparison in the previous addendum were
+**not resolution-matched.** Flagged correctly on review.
+
+### (b) sizes=300 convergence — **the metric has NOT stopped moving**
+
+| sizes | seed 0 dev | step | seed 1 dev | step |
+|---|---|---|---|---|
+| 25 | −3.13% | — | −12.40% | — |
+| 50 | −8.05% | 4.92 pp | −12.21% | 0.18 pp |
+| 100 | −8.04% | **0.01 pp** | −7.57% | 4.65 pp |
+| 200 | −9.18% | 1.15 pp | −6.37% | 1.19 pp |
+| 300 | −9.56% | 0.38 pp | −7.55% | **1.17 pp** |
+
+**There is no resolution at which both seeds change <0.5 pp.** Worse, the
+approach is **non-monotone**: each seed produces a spuriously small step
+(seed 0: 0.01 pp at 100; seed 1: 0.18 pp at 50) and then jumps by >1 pp at
+the next step. Either seed inspected alone would have given a false
+"converged" reading — the same trap as the original sizes=25 artifact, one
+level up.
+
+Absolute values confirm it is genuine non-monotonicity, not slow decay
+(seed 1 base: 452.46 → 453.44 → 453.91 → 454.14 → **458.08**, a +3.94 nm jump
+at the last step after settling to +0.23; seed 1 high moves **−1.68 nm**,
+reversing direction).
+
+**Diagnosis.** `local_thickness` assigns every voxel a radius from a discrete
+grid of `sizes` values spanning the distance-transform range; `cpsd_r50max`
+then takes the **median** of that binned field. Changing `sizes` moves the
+grid, so the median can hop between bins in either direction. A
+median-of-a-binned-distribution has no guarantee of smooth convergence, which
+is exactly what is observed.
+
+### Consequence: the ceiling proposal and P2-C re-gate are NOT delivered
+
+Per the instruction ("before locking ... any revised gate threshold"), and
+because a threshold cannot be responsibly grounded on a measurement that has
+not demonstrated convergence:
+
+- `CPSD_SIZES_DEFAULT` is **left at 100 but explicitly marked unvalidated**
+  (it is still far better than 25, which was demonstrably broken — but it is
+  not a converged choice).
+- **No revised ceiling is proposed**, and **P2-C has not been re-gated.**
+- The resolution-matched recompute of all 15 structures was **stopped**
+  rather than completed at the unvalidated sizes=100.
+
+### What the numbers do support, stated conservatively
+
+Measurement uncertainty from resolution is roughly **±1.2 pp** (largest
+successive step at the top of the ladder). Real ROI-to-ROI spread is CV
+6.7–10.0%. So the metric is far too noisy for a ±5% gate (noise is ~1/4 of
+the ceiling) but would have ~8× headroom against a ceiling near the real
+~10% spread. At sizes=300 the two tested seeds read −9.56% and −7.55%:
+**both fail a ±5% ceiling and both pass a ±10% one**, and that verdict does
+not flip within ±1.2 pp. This is suggestive, not established — it rests on
+2 seeds at one resolution, with a metric that has not converged.
+
+### Recommended next step (not taken)
+
+Rather than pushing `sizes` higher on an unstable estimator, **replace the
+gate statistic with one that is not a median of a binned field** — e.g. the
+volume-weighted mean of the local-thickness field, or a direct
+opening-based granulometry — then re-run this same convergence ladder
+against it. A gate is only as trustworthy as the stability of the number it
+tests, and that has not yet been demonstrated for `cpsd_r50max`.
