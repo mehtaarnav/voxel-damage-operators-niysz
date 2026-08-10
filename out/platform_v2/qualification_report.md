@@ -153,3 +153,81 @@ target or the generator's structure:
 Recommendation: option 1 or 2 (keep the frozen gate, fix the generator),
 with option 4 folded in either way. Awaiting review before implementing any
 of them.
+
+---
+
+## Verification addendum (2026-08-10, post-review) — both checks answered before any option was implemented
+
+### Q2: was "spheres-alone Φ_Ni=0.132" measured or derived? **MEASURED DIRECTLY.**
+
+`design_probe.py` calls
+`rasterize(centres, pairs, R_VOX, np.zeros(n_pairs), shape)` — all neck
+widths set to zero — and `rasterize` skips every neck via `if w <= 0:
+continue`. That is a true spheres-only rasterization, pre-neck-union, not a
+subtraction. Φ_Ni(spheres only) = **0.1323** at R=12.1 against 0.2502 with
+necks, so necks carry **~47% of total Ni volume**. The c-PSD diagnosis rests
+on a directly measured number.
+
+### Q1: is the ±5% c-PSD ceiling grounded in real variability? **NO — real variability is roughly 2× looser.**
+
+c-PSD had **never been computed on the real data** (the real-data study used
+watershed sizing and SNOW chamber diameters; `cpsd_r50max` was added later for
+the synthetic study). Computed here for the first time, on the same 8 µm ROI
+tiling as phase3/4, `sizes=100`
+(`scripts/platform_v2/real_cpsd_variability.py`, `real_cpsd_variability.csv`):
+
+| anode | n_ROI | mean | sd | CV | full spread | per-ROI dev from own mean | ROIs beyond ±5% |
+|---|---|---|---|---|---|---|---|
+| medium | 6 | 1061.3 nm | 106.1 | **10.0%** | 26.9% of mean | −9.7% … +17.3% | **4/6** |
+| coarse | 10 | 1264.2 nm | 85.3 | **6.7%** | 23.2% of mean | −8.2% … +15.0% | **5/10** |
+
+Pooled CV across all 16 ROIs: **11.4%**. Anode-to-anode (medium→coarse):
+**+19.1%**.
+
+**The ±5% ceiling is tighter than the real material's own ROI-to-ROI
+variability.** In the real anodes, 9 of 16 ROIs deviate from their *own
+anode's* mean by more than ±5% — i.e. two ROIs cut from the same real anode
+routinely differ in c-PSD by more than the synthetic gate permits between a
+base structure and its widened counterpart. **Per the pre-registered
+instruction, this reopens option 3 as a legitimate fix rather than a
+shortcut.**
+
+### Additional finding: the c-PSD measure itself was under-resolved
+
+While verifying, found that `CPSD_SIZES_DEFAULT = 25` quantizes c-PSD into
+bins ~6% wide in diameter — comparable to the ±5% gate itself. Only **8
+distinct c-PSD values** appeared across all 15 platform-v2 structures.
+Convergence test on two seeds:
+
+| sizes | seed 0 dev | seed 1 dev |
+|---|---|---|
+| 25 | −3.13% (**"pass"**) | −12.40% |
+| 50 | −8.05% | −12.21% |
+| 100 | −8.04% | −7.57% |
+| 200 | −9.18% (**fail**) | −6.37% |
+
+Seed 0's lone P2-C "PASS" was a **quantization artifact**. At converged
+resolution every seed sits at roughly −6% to −9%. **The P2-C c-PSD failure is
+therefore more uniform than first reported (0/5, not 1/5), while the
+individual numbers were less trustworthy than they looked.**
+`CPSD_SIZES_DEFAULT` raised 25 → 100.
+
+### Where this leaves the four options
+
+- Real deviation is ~−6 to −9% (converged), real ROI-to-ROI variability is
+  CV 6.7–10.0% with 9/16 ROIs beyond ±5%. The synthetic deviation is
+  **within the real material's own natural spread**.
+- **Option 3 is now evidence-backed**, not a loosening of standards: a
+  ceiling near the real CV (~10%) would be grounded in exactly the way the
+  ±5% figure never was. This mirrors the earlier coordination-target
+  correction, where a round number turned out to be ungrounded once the real
+  data was pulled.
+- Options 1/2 (change the generator) remain available and would still be
+  needed if the goal were to hold c-PSD tighter than the real material does —
+  but that is no longer obviously the right goal.
+- The cheap fix is applied regardless: `TARGET_RATIOS` 1.45 → **1.33**, the
+  rung the generator actually produces (Family B design lesson: achieved
+  ratio is the scientific variable, nominal is a label).
+
+**No option has been implemented.** Reporting both findings first, as
+instructed.

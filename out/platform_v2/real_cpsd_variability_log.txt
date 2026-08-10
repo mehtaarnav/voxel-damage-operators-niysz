@@ -1,0 +1,44 @@
+
+=== medium_pre (medium) — 6 ROIs, voxel_geo=24.61nm ===
+  z0y0x0: d_cPSD_r50max=  1244.8 nm (r50=622.4)  [113s]
+  z0y0x1: d_cPSD_r50max=   958.9 nm (r50=479.4)  [214s]
+  z0y1x0: d_cPSD_r50max=   982.0 nm (r50=491.0)  [315s]
+  z0y1x1: d_cPSD_r50max=  1084.3 nm (r50=542.1)  [414s]
+  z0y2x0: d_cPSD_r50max=   998.9 nm (r50=499.5)  [521s]
+  z0y2x1: d_cPSD_r50max=  1099.2 nm (r50=549.6)  [621s]
+
+=== coarse_pre (coarse) — 10 ROIs, voxel_geo=29.42nm ===
+  z0y0x0: d_cPSD_r50max=  1454.0 nm (r50=727.0)  [700s]
+  z0y0x1: d_cPSD_r50max=  1194.6 nm (r50=597.3)  [761s]
+  z0y1x0: d_cPSD_r50max=  1190.0 nm (r50=595.0)  [821s]
+  z0y1x1: d_cPSD_r50max=  1284.9 nm (r50=642.5)  [883s]
+  z0y2x0: d_cPSD_r50max=  1281.1 nm (r50=640.6)  [944s]
+  z0y2x1: d_cPSD_r50max=  1343.1 nm (r50=671.5)  [1006s]
+  z0y3x0: d_cPSD_r50max=  1160.6 nm (r50=580.3)  [1066s]
+  z0y3x1: d_cPSD_r50max=  1241.1 nm (r50=620.5)  [1128s]
+  z0y4x0: d_cPSD_r50max=  1257.1 nm (r50=628.5)  [1189s]
+  z0y4x1: d_cPSD_r50max=  1235.3 nm (r50=617.6)  [1251s]
+
+========================================================================
+REAL c-PSD VARIABILITY (the question: is +-5% grounded?)
+========================================================================
+
+coarse_pre: n_roi=10
+  mean=1264.2 nm  sd=85.3 nm  CV=6.7%
+  min=1160.6  max=1454.0  full spread=23.2% of mean
+  per-ROI deviation from own-anode mean: [-8.2%, +15.0%]
+  ROIs beyond +-5% of own-anode mean: 5/10
+
+medium_pre: n_roi=6
+  mean=1061.3 nm  sd=106.1 nm  CV=10.0%
+  min=958.9  max=1244.8  full spread=26.9% of mean
+  per-ROI deviation from own-anode mean: [-9.7%, +17.3%]
+  ROIs beyond +-5% of own-anode mean: 4/6
+Traceback (most recent call last):
+  File "C:\Users\ARNAV MEHTA\Downloads\soec\connectivity_margin\scripts\platform_v2\real_cpsd_variability.py", line 95, in <module>
+    sys.exit(main())
+             ^^^^^^
+  File "C:\Users\ARNAV MEHTA\Downloads\soec\connectivity_margin\scripts\platform_v2\real_cpsd_variability.py", line 84, in main
+    if df.sample.nunique() > 1:
+       ^^^^^^^^^^^^^^^^^
+AttributeError: 'function' object has no attribute 'nunique'

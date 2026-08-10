@@ -81,7 +81,7 @@ def main():
         print(f"  ROIs beyond +-5% of own-anode mean: "
               f"{int((dev.abs() > 5).sum())}/{len(v)}")
 
-    if df.sample.nunique() > 1:
+    if df["sample"].nunique() > 1:
         m = df.groupby("sample").d_cPSD_r50max_nm.mean()
         print(f"\nanode-to-anode: {dict(m.round(1))}  "
               f"medium->coarse change = "
