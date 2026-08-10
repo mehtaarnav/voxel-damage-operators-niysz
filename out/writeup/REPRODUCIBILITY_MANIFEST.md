@@ -127,8 +127,23 @@ conclusion changes**, and nothing in Phase 3/4 was retroactively altered.
 | volume fractions, phase profiles | `out/phase2/phase2_volume_fractions.csv`, `phase2_profile_*.csv`, `phase2_label_inventory.csv` |
 | SNOW networks, marker sensitivity, REV | `out/phase3/phase3_graphs_8.0um.csv`, `phase3_snow_8.0um_rmax4.csv`, `phase3c_rmax_sensitivity.csv`, `phase3a_rev.csv`, `diag_skeleton.csv` |
 | TPB, metrics, particle size, λ₂ scaling | `out/phase4/phase4b_tpb_full_stacks.csv`, `phase4c_metrics_per_{roi,anode}_8.0um.csv`, `phase4d_particles.csv` |
-| **outcome — retained percolation** | `out/phase5/phase5_percolation.csv`, **`phase5_retention.csv`** |
+| **outcome — retained percolation** | **`out/phase6/phase6_comparison_table.csv`** (columns `P_span_pre/post`, `P_span_retained`, `P_reach_retained`, `tpb_retained`) — **not** `out/phase5/*`, see the defect note below |
 | **comparison table and rankings** | **`out/phase6/phase6_comparison_table.csv`**, `phase6_rankings.csv` |
+
+> **Committed-artifact defect (found 2026-08-10 during Project 2 scoping; not
+> previously disclosed).** The two Phase 5 CSVs are **truncated**:
+> `phase5_percolation.csv` contains **1 of 6 rows** (`coarse_pre` only) and
+> `phase5_retention.csv` is **empty (2 bytes)** — evidently an interrupted write
+> in commit `47b08ee`. **No reported conclusion is affected**: every retention
+> number quoted in `REPORT.md` and in `PATH_B_MEMO.md` §A is carried by
+> `out/phase6/phase6_comparison_table.csv`, which is complete for all three
+> anodes and whose values (`P_span_retained` = 0.6795 / 0.8547 / 0.9470;
+> `tpb_retained` = 0.7993 / 0.7460 / 0.5897) match the report exactly. The
+> defect is one of **regenerability, not correctness**: a reproducer following
+> the Phase 5 route will not find the per-stack outcome table and must either
+> re-run `phase5_percolation.py` (~10 s per stack, full stacks) or read the
+> aggregated values from Phase 6. Recorded rather than silently repaired,
+> because re-running would alter a committed artifact from the original study.
 
 **Part B**
 
