@@ -96,3 +96,70 @@ amendment (§0g/2), and is **not** taken here.
   obligation applies to a positive or weak-positive branch. This is neither.
 - Not run: Family C, real-data calibration, opening granulometry, any third
   image-based size metric, item 6.
+
+---
+
+## Provenance verification of the widened structures (2026-08-10, post-review)
+
+Requested before accepting the null: confirm the "widened" structures fed
+into the damage run are the previously-validated ones, not an accidental
+reuse of base geometry. This was a live risk — `p10_group_experiment.py`
+rebuilds each structure from `intended_T_vox` looked up in
+`qualification_run.csv`, so a lookup or seed-indexing slip would silently
+produce base geometry while still labelling the row `lower_tail`.
+
+### Check 1 — thresholds and recorded metrics (cross-referenced, not derived)
+
+| mode | nominal | `intended_T_vox` | achieved p10 | neck p10 (nm) | neck p50 (nm) |
+|---|---|---|---|---|---|
+| base | 1.00× | NaN (no widening) | 1.000 | 120.0 | 320.0 |
+| lower_tail | 1.45× | **8.5** | 1.333 | **160.0** | 320.0 |
+| lower_tail | 2.00× | **11.0** | 2.000 | **240.0** | 320.0 |
+
+Thresholds are non-null and distinct (8.5 vs 11.0). Neck p10 genuinely moves
+120 → 160 → 240 nm while p50 stays pinned at 320 nm — the tail-selective
+signature, and exactly the values recorded at qualification. The damage run's
+`achieved_p10_ratio` column carries `nunique = 1` per group at 1.000 / 1.333 /
+2.000, so no base row leaked into a widened group.
+
+### Check 2 — raw arrays, structure seed 0 (not derived metrics)
+
+**Neck-width arrays:**
+
+| | min | p10 | p50 | max |
+|---|---|---|---|---|
+| base | 4 | 5.0 | 15.0 | 20 |
+| 2.00× | **11** | **11.0** | 15.0 | 20 |
+
+`np.array_equal(base, high)` → **False**. **46 of 224 necks changed** — i.e.
+the max-clip raised every neck below 11 voxels, leaving the rest untouched,
+which is the intended lower-tail rule. Note p50 is identical (15.0) while the
+minimum jumps 4 → 11: the intervention is confined to the tail.
+
+**Ni mask arrays:**
+
+| quantity | value |
+|---|---|
+| base voxels | 1,137,116 |
+| 2.00× voxels | 1,137,101 |
+| `np.array_equal` | **False** |
+| voxels differing | **67,803** (1.49% of domain) |
+| in base only / in 2.00× only | 33,909 / 33,894 |
+| `r_final` applied | 11.3412 (vs base R = 12.1) |
+
+The two masks differ in 67,803 voxels, with the base-only and high-only
+counts nearly balanced (33,909 vs 33,894) — the mass-conservation signature:
+~34k voxels removed from particle bodies, ~34k added at the necks, net −15.
+
+### Verdict
+
+**Both checks pass. The widened structures are genuine and distinct from
+base.** There is no path-, seed-, or threshold-indexing slip. The
+zero-variance pattern is therefore a real property of this design's damage
+response, not a pipeline artifact, and **the null stands as reported**.
+
+Worth stating plainly what this makes the result: two structures that differ
+in 67,803 voxels, with a 2× difference in measured neck p10 and a 6.25%
+difference in particle radius, fail percolation at *identical* damage
+intensity (8.5 rounds) under all five damage seeds. That is a substantive
+finding about the damage response, not an absence of signal in the pipeline.
