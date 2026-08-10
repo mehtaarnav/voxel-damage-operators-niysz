@@ -1,0 +1,11 @@
+nominal_target_ratio,seed,achieved_p10_ratio,full_pass,failed_checks
+1.5,0,1.333333372807931,False,p10_ge_target
+1.5,1,1.6142746033532454,True,
+1.5,2,1.333333372807931,False,p10_ge_target
+1.5,3,1.333333372807931,False,p10_ge_target
+1.5,4,1.333333372807931,False,p10_ge_target
+2.0,0,2.0,True,
+2.0,1,1.9371294322630082,False,p10_ge_target
+2.0,2,2.0,True,
+2.0,3,2.0,True,
+2.0,4,2.0,True,

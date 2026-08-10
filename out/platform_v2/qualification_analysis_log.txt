@@ -1,0 +1,48 @@
+
+==============================================================================
+GATE P2-A: composition and topology
+==============================================================================
+  seeds: 5 (need >=5: True)
+  Phi_Ni: mean=0.2502 range=[0.2474,0.2561] (target 0.250)
+  mean_degree: mean=4.193 range=[4.184,4.206] (target band (3.5, 4.5))
+  all base seeds in coordination band: True
+  single connected cluster (n_clusters==1) for all seeds: True
+  P_span intact (==1.0) for all seeds: True
+  TOPOLOGY NOTE: PLAIN lattice adjacency used throughout -- the design probe (scripts/platform_v2/design_probe.py) found this already lands mean_degree=4.204 in-band; NO topology modification (face-diagonal bonds etc.) was built or needed.
+
+==============================================================================
+GATE P2-B: base neck distribution
+==============================================================================
+  p50/p10: mean=2.90 range=[2.50,3.00] (target 3.0-4.3, floor >=2.5)
+  base p10 resolution: mean=5.2vox (target >=3, preferably >=4)
+  all base seeds accepted on first attempt (n_attempts==1): True
+
+==============================================================================
+GATE P2-C: lower-tail decoupling — PER-SEED (no aggregate-mean pass)
+==============================================================================
+
+--- intermediate (nominal 1.45x) ---
+  seed=0.0  achieved_p10=1.33  phi_dev=+0.01%  cpsd_dev=+0.00%  p50_ratio=1.00  n_nodes=98.0/98.0  mean_degree=4.224  P_span=1.000  n_clusters=1.0  -> fail  (failed: p10_ge_target)
+  seed=1.0  achieved_p10=1.33  phi_dev=+0.02%  cpsd_dev=-11.33%  p50_ratio=1.00  n_nodes=97.0/97.0  mean_degree=4.165  P_span=1.000  n_clusters=1.0  -> fail  (failed: p10_ge_target, cpsd_le_5pct)
+  seed=2.0  achieved_p10=1.33  phi_dev=+0.01%  cpsd_dev=+0.00%  p50_ratio=1.00  n_nodes=97.0/97.0  mean_degree=4.227  P_span=1.000  n_clusters=1.0  -> fail  (failed: p10_ge_target)
+  seed=3.0  achieved_p10=1.33  phi_dev=+0.02%  cpsd_dev=-10.48%  p50_ratio=1.00  n_nodes=97.0/97.0  mean_degree=4.206  P_span=1.000  n_clusters=1.0  -> fail  (failed: p10_ge_target, cpsd_le_5pct)
+  seed=4.0  achieved_p10=1.33  phi_dev=+0.02%  cpsd_dev=-0.95%  p50_ratio=1.00  n_nodes=99.0/98.0  mean_degree=4.162  P_span=1.000  n_clusters=1.0  -> fail  (failed: p10_ge_target)
+  intermediate: 0/5 seeds pass -> NOT FEASIBLE
+
+--- high (nominal 2.0x) ---
+  seed=0.0  achieved_p10=2.00  phi_dev=+0.01%  cpsd_dev=-3.13%  p50_ratio=1.00  n_nodes=99.0/98.0  mean_degree=4.202  P_span=1.000  n_clusters=1.0  -> PASS
+  seed=1.0  achieved_p10=2.00  phi_dev=+0.02%  cpsd_dev=-12.40%  p50_ratio=1.00  n_nodes=98.0/97.0  mean_degree=4.122  P_span=1.000  n_clusters=1.0  -> fail  (failed: cpsd_le_5pct)
+  seed=2.0  achieved_p10=2.00  phi_dev=+0.02%  cpsd_dev=-9.90%  p50_ratio=1.00  n_nodes=101.0/97.0  mean_degree=4.099  P_span=1.000  n_clusters=1.0  -> fail  (failed: cpsd_le_5pct)
+  seed=3.0  achieved_p10=2.00  phi_dev=+0.01%  cpsd_dev=-10.76%  p50_ratio=1.00  n_nodes=97.0/97.0  mean_degree=4.165  P_span=1.000  n_clusters=1.0  -> fail  (failed: cpsd_le_5pct)
+  seed=4.0  achieved_p10=2.00  phi_dev=+0.01%  cpsd_dev=-9.40%  p50_ratio=1.00  n_nodes=98.0/98.0  mean_degree=4.163  P_span=1.000  n_clusters=1.0  -> fail  (failed: cpsd_le_5pct)
+  high: 1/5 seeds pass -> NOT FEASIBLE
+
+  MASS-CONSERVATION HEADROOM CHECK (per-seed, high-ratio point only, item 6):
+    seed=0.0: added= 33894  removed= 33909  net_residual=   -15  phi_dev=+0.01%  r_final=11.34vox (r_base=12.1vox, 94% of base)  n_nodes_lost=-1
+    seed=1.0: added= 31409  removed= 31365  net_residual=   +44  phi_dev=+0.02%  r_final=11.42vox (r_base=12.1vox, 94% of base)  n_nodes_lost=-1
+    seed=2.0: added= 37339  removed= 37302  net_residual=   +37  phi_dev=+0.02%  r_final=11.28vox (r_base=12.1vox, 93% of base)  n_nodes_lost=-4
+    seed=3.0: added= 35799  removed= 35830  net_residual=   -31  phi_dev=+0.01%  r_final=11.31vox (r_base=12.1vox, 93% of base)  n_nodes_lost=0
+    seed=4.0: added= 27661  removed= 27666  net_residual=    -5  phi_dev=+0.01%  r_final=11.47vox (r_base=12.1vox, 95% of base)  n_nodes_lost=0
+
+[saved] C:\Users\ARNAV MEHTA\Downloads\soec\connectivity_margin\out\platform_v2\qualification_deviations.csv
+[saved] C:\Users\ARNAV MEHTA\Downloads\soec\connectivity_margin\out\platform_v2\qualification_run.png

@@ -1,0 +1,15 @@
+# Downloaded/derived tomography data (2.2 GB) — regenerate with
+# phase1_download.py, then unzip. Never committed.
+data/
+
+# Fetched papers / supplementary (re-fetchable via phase1_get_papers_pmc.py
+# and phase1_get_supplementary2.py)
+refs/
+
+# Large binary intermediates that are fully regenerable from code + seeds
+out/networks/
+out/graphs/
+
+__pycache__/
+*.pyc
+*.part

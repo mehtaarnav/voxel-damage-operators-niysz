@@ -1,0 +1,38 @@
+==============================================================================
+PLATFORM V2 DESIGN PROBE
+==============================================================================
+geometry: R=12.1vox (D=24.2vox=484nm) pitch=32vox nlat_z=6 nlat_xy=4 margin=8
+domain shape = (161, 168, 168)  (target: every axis in [160,192]: True)
+n_sites=96  n_pairs=224  RAW TOPOLOGICAL mean_degree = 2*224/96 = 4.667
+  (this is the pairs-list mean degree BEFORE any watershed/SNOW segmentation effect -- the actual measured value below may differ due to node merging or splitting)
+
+Phi_Ni from spheres alone (no necks): 0.1323  (target 0.250)
+
+base neck-width mixture (20% weak(4, 6)vox + 80% normal(12, 20)vox), n_pairs=224:
+  p10=5.00vox  p50=15.00vox  p50/p10=3.00  min=4vox  max=20vox
+  target p50/p10 in [3.0,4.3], validity floor >=2.5: PASS
+  base p10 resolved by >=5.0 voxels (target >=3, preferably >=4): PASS
+
+Phi_Ni with base necks included: 0.2502  (target 0.250, deviation +0.1%)  [6s]
+P_span=1.000  P_reach=1.000  n_clusters=1  single-connected-cluster: YES
+
+==============================================================================
+OPEN QUESTION: does PLAIN lattice adjacency land in [3.5, 4.5] without any topology modification?
+==============================================================================
+  n_nodes=98  n_edges=206  SNOW-measured mean_degree=4.204  [14s]
+  degree distribution (min=1, max=7, median=5):
+      degree 1:   14 nodes ( 14.3%)
+      degree 2:    2 nodes (  2.0%)
+      degree 3:    5 nodes (  5.1%)
+      degree 4:   26 nodes ( 26.5%)
+      degree 5:   32 nodes ( 32.7%)
+      degree 6:   18 nodes ( 18.4%)
+      degree 7:    1 nodes (  1.0%)
+  degree-0 (isolated) chambers: 0
+  degree-1 (dead-end/pendant) chambers: 14
+
+  VERDICT: measured mean_degree 4.204 is INSIDE the target band [3.5, 4.5].
+  -> PLAIN lattice adjacency (6-connectivity, nearest-neighbour only) ALREADY satisfies the coordination target at this Phi_Ni/domain size. NO topology modification is needed.
+  -> Per instruction: report this plainly, do not build face-diagonal / proximity-edge topology machinery.
+
+[done] total 14s

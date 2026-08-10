@@ -1,0 +1,2 @@
+sample,grain,state,phi_ni_published,P_published,n_ni_voxels,n_clusters,percolates_x,n_spanning_clusters,P_span,P_reach,P_largest,percolates_z,percolates_y,P_reach_over_published,seconds
+coarse_pre,coarse,pristine,0.229,0.959,110233806,1225,True,1,0.9315166801008394,0.9667708289052452,0.9315166801008394,True,True,1.0081030541243434,10.2

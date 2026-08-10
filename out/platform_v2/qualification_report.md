@@ -1,0 +1,155 @@
+# Platform v2 — Ni generator qualification report
+
+Run 2026-08-10. Ni generator only: no YSZ/pore placement, no D4/damage, no
+Family C, no real-dataset calibration (all per instruction). Code:
+`scripts/platform_v2/{design_probe,qualification_run}.py`, generator in
+`cmlib/synth.py`. Data: `qualification_run.csv`,
+`qualification_deviations.csv`, `qualification_base_validity_log.csv`,
+`qualification_gating_log.txt`, `qualification_run.png`. Design rationale:
+`design_memo.md`.
+
+## Headline
+
+**Gates P2-A and P2-B PASS. Gate P2-C FAILS on the c-PSD criterion**, for a
+specific, diagnosed, and (in hindsight) predictable reason that is a genuine
+property of the lower-Φ_Ni geometry, not a bug and not seed noise.
+
+## Gate P2-A: composition and topology — **PASS**
+
+| criterion | result |
+|---|---|
+| ≥5 base seeds | 5 ✓ |
+| Φ_Ni near 0.250 | mean **0.2502**, range 0.2474–0.2561 ✓ |
+| SNOW mean degree in 3.5–4.5 | mean **4.193**, range 4.184–4.206, all 5 in-band ✓ |
+| single connected Ni cluster | n_clusters=1 for all seeds ✓ |
+| initial P_span intact | 1.000 for all seeds ✓ |
+| no severe node-count loss | 97–98 nodes, no loss at base ✓ |
+
+**Topology finding (the open question), stated plainly: plain
+nearest-neighbour lattice adjacency already meets the coordination target.
+No topology modification was required or built.** Raw topological mean degree
+2×224/96 = 4.667; SNOW-measured 4.184–4.206. Degree distribution at base:
+median 5, range 1–7, 14/98 nodes (14.3%) at degree 1, **0 nodes at degree 0**.
+The earlier "coordination is too low, needs face-diagonal bonds" framing was
+an artifact of the ungrounded 6–8 target — confirmed, and no machinery was
+built on it.
+
+## Gate P2-B: base neck distribution — **PASS (with one honest note)**
+
+| criterion | result |
+|---|---|
+| p50/p10 in range / above floor | mean **2.90**, range 2.50–3.00 — all ≥2.5 floor ✓, but mean sits *below* the 3.0–4.3 target |
+| base p10 resolved ≥3 vox | mean **5.2 vox** ✓ (exceeds the preferred ≥4) |
+| validity/rejection log recorded | ✓ all 5 seeds accepted on first attempt, no rejections |
+
+The p50/p10 shortfall is small and every seed clears the pre-registered
+validity floor, but the *mean* (2.90) missing the stated 3.0–4.3 target is
+reported rather than rounded up. Seed 4 sits exactly at 2.50, i.e. exactly on
+the floor.
+
+## Gate P2-C: lower-tail decoupling — **FAIL**
+
+Per-seed (no aggregate-mean criterion, per `preregistration.md` §0c/B):
+
+**Intermediate (nominal 1.45×) — 0/5 pass:**
+
+| seed | achieved p10 | Φ_Ni dev | c-PSD dev | p50 ratio | n_nodes | P_span | verdict |
+|---|---|---|---|---|---|---|---|
+| 0 | 1.33 | +0.01% | +0.00% | 1.00 | 98/98 | 1.000 | fail (p10) |
+| 1 | 1.33 | +0.02% | **−11.33%** | 1.00 | 97/97 | 1.000 | fail (p10, c-PSD) |
+| 2 | 1.33 | +0.01% | +0.00% | 1.00 | 97/97 | 1.000 | fail (p10) |
+| 3 | 1.33 | +0.02% | **−10.48%** | 1.00 | 97/97 | 1.000 | fail (p10, c-PSD) |
+| 4 | 1.33 | +0.02% | −0.95% | 1.00 | 99/98 | 1.000 | fail (p10) |
+
+**High (nominal 2.0×) — 1/5 pass:**
+
+| seed | achieved p10 | Φ_Ni dev | c-PSD dev | p50 ratio | n_nodes | P_span | verdict |
+|---|---|---|---|---|---|---|---|
+| 0 | 2.00 | +0.01% | −3.13% | 1.00 | 99/98 | 1.000 | **PASS** |
+| 1 | 2.00 | +0.02% | **−12.40%** | 1.00 | 98/97 | 1.000 | fail (c-PSD) |
+| 2 | 2.00 | +0.02% | **−9.90%** | 1.00 | 101/97 | 1.000 | fail (c-PSD) |
+| 3 | 2.00 | +0.01% | **−10.76%** | 1.00 | 97/97 | 1.000 | fail (c-PSD) |
+| 4 | 2.00 | +0.01% | **−9.40%** | 1.00 | 98/98 | 1.000 | fail (c-PSD) |
+
+### Two distinct failure causes, both diagnosed
+
+**(1) Intermediate bin: quantization, not a mechanism failure.** All 5 seeds
+landed on the 1.33× rung, below the 1.45× nominal target. Every other
+criterion is essentially perfect on those seeds (Φ_Ni ~0.01–0.02%, p50 ratio
+exactly 1.00, no node loss, P_span intact). This is the same discrete-rung
+behaviour already documented in Family B — achievable p10 values are set by
+the base mixture's own value grid, and 1.45× simply falls between rungs.
+**Fixable by targeting an achievable rung (1.33×) rather than 1.45×**, since
+achieved ratio is the scientific variable anyway.
+
+**(2) High bin: c-PSD deviation is real, systematic, and mechanistic — this
+is the item-6 headroom risk materialising.** c-PSD deviation is **negative in
+every failing case** (−9.4% to −12.4%), never random-signed. Cause, confirmed
+directly from the saved data:
+
+| seed | r_base | r_final | shrink | c-PSD base → high |
+|---|---|---|---|---|
+| 0 | 12.10 | 11.34 | 94% | 414 → 401 nm |
+| 1 | 12.10 | 11.42 | 94% | 452 → 396 nm |
+| 2 | 12.10 | 11.28 | 93% | 440 → 396 nm |
+| 3 | 12.10 | 11.31 | 93% | 444 → 396 nm |
+| 4 | 12.10 | 11.47 | 95% | 444 → 402 nm |
+
+Mass conservation itself is **excellent** (net residuals −31 to +44 voxels on
+~30,000 added/removed; Φ_Ni deviation ≤0.02% everywhere). But it is achieved
+by shrinking sphere radius 5–7%, and **c-PSD measures particle body size, so
+it registers that shrink directly.** At the Family B pilot's Φ_Ni≈0.33
+(R=14, spheres tangent) there was enough Ni volume that the same widening
+needed proportionally less radius compensation. At Φ_Ni=0.250 the necks carry
+~47% of total Ni volume (spheres alone give only 0.132), so widening them
+demands a proportionally larger radius give-back.
+
+**This is precisely the headroom concern raised in instruction item 6 — and
+it appears not as an r_lo-floor blowout (radii stayed at 93–95% of base,
+nowhere near the 1.0-voxel floor, no seed flagged) but as a c-PSD gate
+failure.** The mass-conservation mechanism is working exactly as designed;
+the tension is that Φ_Ni conservation and c-PSD particle-size conservation
+are **not simultaneously satisfiable** at this Φ_Ni when necks carry half the
+Ni volume.
+
+### Node counts, per-seed at the high-ratio point (item 6)
+
+No seed lost meaningful nodes — 97–101 vs base 97–98 (seed 2 *gained* 4).
+Nothing approached the r_lo floor; no seed was flagged. The aggregate ≥95%
+gate would have passed cleanly, which is exactly why the per-seed reporting
+was required: **the real failure was invisible to the node-count gate and
+showed up only in c-PSD.**
+
+## What this means, and what I have not done
+
+Gate P2-C fails, so **platform v2 is not yet qualified** and I have not
+proceeded to YSZ/pore placement or D4 (per instruction, and independently
+warranted).
+
+The failure is not "the generator is broken" — Φ_Ni, coordination,
+percolation, p50 stability, and node counts are all excellent. It is a
+**genuine geometric tension** newly exposed by the (correct) move to
+Φ_Ni=0.250: at this composition, necks are ~47% of the Ni volume, so
+lower-tail widening cannot be mass-compensated without measurably shrinking
+particle bodies, which the c-PSD gate — correctly, since it is the
+neck-insensitive size control — refuses.
+
+Options, none of which I have taken unilaterally since each changes a frozen
+target or the generator's structure:
+
+1. **Reduce the neck volume fraction** (more spheres/smaller pitch so spheres
+   carry more of Φ_Ni, or a narrower base neck distribution), restoring
+   compensation headroom. Changes the geometry, needs a re-run of P2-A/B.
+2. **Compensate somewhere other than sphere radius** — e.g. remove volume
+   from *untouched* wide necks rather than from particle bodies, leaving
+   c-PSD (a body-size measure) untouched. Structurally new mechanism.
+3. **Re-examine whether c-PSD ±5% is the right ceiling** at Φ_Ni=0.250 given
+   that a 5–7% body shrink is arguably the *physically honest* consequence of
+   conserving mass while widening necks. This would be relaxing a frozen
+   gate and I am not proposing it unilaterally.
+4. **Target the 1.33× rung** for the intermediate point regardless (fixes
+   failure cause 1 cheaply, independent of the c-PSD question).
+
+Recommendation: option 1 or 2 (keep the frozen gate, fix the generator),
+with option 4 folded in either way. Awaiting review before implementing any
+of them.

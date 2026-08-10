@@ -1,0 +1,7 @@
+kind,grain,pre,post,delta_from_AB_pct,delta_printed_panelC_pct,abs_diff_pp
+total,fine,2.65,1.97,-25.7,-26,0.3
+total,medium,2.03,1.19,-41.4,-42,0.6
+total,coarse,1.07,0.65,-39.3,-39,0.3
+active,fine,2.38,1.18,-50.4,-50,0.4
+active,medium,1.79,0.55,-69.3,-70,0.7
+active,coarse,0.78,0.05,-93.6,-93,0.6

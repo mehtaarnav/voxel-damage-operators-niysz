@@ -1,0 +1,10 @@
+predictor,column,order,order_reversed,matches::P_span_retained,matchesREV::P_span_retained,matches::P_reach_retained,matchesREV::P_reach_retained,matches::tpb_retained,matchesREV::tpb_retained,matches::P_span_post,matchesREV::P_span_post
+algebraic connectivity lambda2 (raw),lambda2_raw_mean,coarse > medium > fine,fine > medium > coarse,True,False,False,False,False,True,True,False
+algebraic connectivity lambda2 (normalised),lambda2_norm_mean,coarse > medium > fine,fine > medium > coarse,True,False,False,False,False,True,True,False
+min-cut face-to-face,mincut_mean,medium > fine > coarse,coarse > fine > medium,False,False,False,False,False,False,False,False
+effective conductance,g_eff_mean,medium > fine > coarse,coarse > fine > medium,False,False,False,False,False,False,False,False
+10th-percentile neck width,neck_p10_nm_mean,coarse > medium > fine,fine > medium > coarse,True,False,False,False,False,True,True,False
+Ni volume fraction (conventional),Ni_phi,fine > medium > coarse,coarse > medium > fine,False,True,False,False,True,False,False,True
+"mean Ni particle size, explicit watershed (conventional)",particle_d_volwt_nm,fine > medium > coarse,coarse > medium > fine,False,True,False,False,True,False,False,True
+"mean Ni chamber size, SNOW watershed (conventional)",chamber_equiv_diam_mean_nm_mean,fine > medium > coarse,coarse > medium > fine,False,True,False,False,True,False,False,True
+pristine TPB density (conventional),tpb_density_pre,fine > medium > coarse,coarse > medium > fine,False,True,False,False,True,False,False,True
