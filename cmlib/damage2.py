@@ -276,3 +276,47 @@ def ni_ysz_interface_area_vox(ni_mask, ysz_mask):
         for sh in (1, -1):
             n += int((ni_mask & np.roll(ysz_mask, sh, axis=ax)).sum())
     return n
+
+
+# ---------------------------------------------------------------- O6
+def apply_o6(ni_mask, ysz_mask, n_rounds, seed, p_erode=O1_P_ERODE):
+    """O6 -- reduction-only Ni surface erosion. O1 with NO oxidative expansion.
+
+    Frozen in out/project2/PREREG_O6.md (commit f980562) before implementation.
+
+    WHY THE EXPANSION STEP IS GONE. O1/D4 dilates Ni by one voxel into pore,
+    which models Ni->NiO oxidation (~70% volume expansion; NiO ~11.2 vs Ni
+    ~6.59 cm^3/mol). The process modelled here is Ni loss under REDUCING
+    conditions -- coarsening, dissolution, electrochemical removal -- which is
+    volume-losing or volume-conserving, not expanding. On the synthetic platform
+    the step was benign only because gate G1-c enforced pristine P_span=1.000,
+    so there was nothing to heal. Measured on real voxels, it raised pristine
+    P_span from 0.9821/0.9713/0.8878 to exactly 1.0000 and multiplied TPB by
+    7.7-15.2x. That is an operator artifact, not a degradation mechanism.
+
+    O1 in cmlib/damage.py is untouched and is not run on real data.
+    """
+    if n_rounds <= 0:
+        return ni_mask.copy(), dict(voxels_pre=int(ni_mask.sum()),
+                                    voxels_post=int(ni_mask.sum()),
+                                    voxels_removed_erosion=0)
+    rng = np.random.default_rng(seed)
+    cur = ni_mask.copy()
+    removed = 0
+    for _ in range(int(n_rounds)):
+        eroded = ndi.binary_erosion(cur, structure=STRUCT6)
+        boundary = cur & ~eroded
+        rm = boundary & (rng.random(cur.shape) < p_erode)
+        removed += int(rm.sum())
+        cur &= ~rm
+    lab, n = ndi.label(cur, structure=STRUCT6)
+    if n == 0:
+        final = np.zeros_like(cur)
+    else:
+        c = np.bincount(lab.ravel())
+        c[0] = 0
+        final = lab == int(np.argmax(c))
+    return final, dict(voxels_pre=int(ni_mask.sum()),
+                       voxels_post=int(final.sum()),
+                       voxels_removed_erosion=removed,
+                       voxels_removed_islands=int(cur.sum() - final.sum()))

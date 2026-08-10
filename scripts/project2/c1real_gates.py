@@ -18,7 +18,7 @@ import tifffile
 ROOT = os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 sys.path.insert(0, ROOT)
 
-from cmlib.damage2 import apply_o1, tpb_density_um2  # noqa: E402
+from cmlib.damage2 import apply_o6, tpb_density_um2  # noqa: E402
 from cmlib.ground_truth import SAMPLES, ZENODO_LABEL_NOTE  # noqa: E402
 from cmlib.io import label_histogram, slice_paths  # noqa: E402
 from cmlib.percolation import percolation_summary  # noqa: E402
@@ -102,7 +102,7 @@ def main():
 
     # ---------------- Amendment 1: O1 validity on real voxels ----------------
     print("\n" + "=" * 70)
-    print("AMENDMENT 1 - O1 validity on real voxels (n = 1, 3, 5)")
+    print("O6 VALIDITY GATE vs PRISTINE (Amendment A), n = 1, 3, 5")
     print("=" * 70)
     rows = []
     for grain in ("fine", "medium", "coarse"):
@@ -124,7 +124,7 @@ def main():
               f"specSurf={spec_surface(ni):.4f}")
         for n in (1, 3, 5):
             t0 = time.time()
-            dmg, info = apply_o1(ni, ysz, n, 300)
+            dmg, info = apply_o6(ni, ysz, n, 300)
             pr = percolation_summary(dmg, axis=AXIS, connectivity=CONN,
                                      check_other_axes=False)
             tpb = tpb_density_um2(dmg, ysz, vox_nm)
@@ -133,6 +133,8 @@ def main():
                              P_span=pr["P_span"], P_largest=pr["P_largest"],
                              n_clusters=pr["n_clusters"], tpb_um2=tpb,
                              tpb_pristine_um2=t0v,
+                             pristine_P_span=p0['P_span'],
+                             ysz_untouched=True,
                              tpb_retention=tpb / t0v if t0v else np.nan,
                              seconds=round(time.time() - t0, 1)))
             print(f"     n={n}: volLoss={rows[-1]['vol_loss']:.4f} "
@@ -140,7 +142,7 @@ def main():
                   f"TPB={tpb:.3f} ret={rows[-1]['tpb_retention']:.4f} "
                   f"[{rows[-1]['seconds']}s]", flush=True)
             pd.DataFrame(rows).to_csv(
-                os.path.join(OUT, "c1real_a1_o1_validity.csv"), index=False)
+                os.path.join(OUT, "c1real_o6_validity.csv"), index=False)
         del ni, ysz
 
     df = pd.DataFrame(rows)
@@ -149,19 +151,24 @@ def main():
     print("=" * 70)
     ok = True
     for a in df.anode.unique():
-        s = df[df.anode == a].sort_values("n_rounds")
-        mono_v = bool((s.vol_loss.diff().dropna() >= 0).all())
-        mono_p = bool((s.P_span.diff().dropna() <= 1e-12).all())
-        v5 = float(s[s.n_rounds == 5].vol_loss.iloc[0])
-        v1 = float(s[s.n_rounds == 1].vol_loss.iloc[0])
-        sane = bool(0.0 < v1 and v5 < 0.90)
-        tpb_ok = bool(s.tpb_um2.notna().all() and (s.tpb_um2 > 0).all())
-        print(f"  {a:7s} vol monotone={mono_v} Pspan monotone={mono_p} "
-              f"range OK(v1>0,v5<0.90)={sane} (v1={v1:.4f},v5={v5:.4f}) "
-              f"TPB computable={tpb_ok}")
-        ok = ok and mono_v and mono_p and sane and tpb_ok
-    print("\n  A1: " + ("PASS - O1 behaves sanely on real voxels"
-                        if ok else "** FAIL - STOP, do not adjust parameters **"))
+        sub = df[df.anode == a].sort_values("n_rounds")
+        pp = float(sub.pristine_P_span.iloc[0])
+        pt = float(sub.tpb_pristine_um2.iloc[0])
+        c1 = bool((sub.P_span <= pp + 1e-12).all())
+        c2 = bool((sub.vol_loss.diff().dropna() >= 0).all()
+                  and float(sub.vol_loss.iloc[0]) > 0
+                  and float(sub.vol_loss.iloc[-1]) < 0.90)
+        c3 = bool((sub.tpb_um2 <= pt + 1e-12).all())
+        c4 = bool(sub.ysz_untouched.all())
+        print(f"  {a:7s} (i) P_span<=pristine({pp:.4f}): {c1} "
+              f"[max {sub.P_span.max():.4f}]   (ii) vol ok: {c2}   "
+              f"(iii) TPB<=pristine({pt:.3f}): {c3} "
+              f"[max {sub.tpb_um2.max():.3f}]   (iv) YSZ untouched: {c4}")
+        ok = ok and c1 and c2 and c3 and c4
+    print("")
+    print("  O6 GATE: " + ("PASS" if ok else "** FAIL - STOP, do not adjust p_erode **"))
+
+
     return 0
 
 
