@@ -379,3 +379,91 @@ Recommendation (not implemented, awaiting review):
 **Nothing locked; P2-C still not re-gated.** Steps 4–5 (recompute both
 sides at matched resolution, propose ceiling, re-gate) remain blocked on
 choosing a metric that demonstrably converges.
+
+---
+
+## Resolution (2026-08-10): path (b) — provisional generator gate, image-based size-comparability deferred
+
+### 1. Provisional internal self-consistency gate — **PASSES on its own terms**
+
+Scope of this gate, stated precisely: it asks *"is the mass-conservation
+mechanism behaving sanely?"* — **not** *"are these structures size-comparable
+to real tomography?"* (see §2). It uses the exact generator diagnostic, with
+the qualification in `design_memo.md` about what that number is and is not
+ground truth for.
+
+Per-seed, high ratio (2.0×), R_base = 12.1 vox, r_lo floor = 1.0 vox:
+
+| seed | r_final | radius dev | headroom above r_lo floor | net voxel residual | Φ_Ni dev |
+|---|---|---|---|---|---|
+| 0 | 11.341 | −6.25% | 93.2% | −15 | +0.01% |
+| 1 | 11.423 | −5.58% | 93.9% | +44 | +0.02% |
+| 2 | 11.276 | −6.79% | 92.6% | +37 | +0.02% |
+| 3 | 11.311 | −6.50% | 92.9% | −31 | +0.01% |
+| 4 | 11.471 | −5.17% | 94.4% | −5 | +0.01% |
+
+Intermediate (1.33×): −1.70% to −2.13%, headroom 97.7–98.1%.
+
+**Verdict: the mechanism is not broken.** Radius shrink is a tight, consistent
+5.17–6.79% at high ratio (~2% at intermediate); every seed retains >92% of its
+headroom above the r_lo floor; Φ_Ni is conserved to ≤0.02%; net voxel
+residuals are ±44 on ~30,000 voxels moved. The item-6 headroom concern is
+answered — nothing is near the floor, and no seed is an outlier.
+
+### 2. What this does NOT close
+
+P2-C's original purpose was **size-comparability with real tomography** — that
+is why an image-based metric was specified rather than a generator parameter.
+A generator diagnostic cannot serve that purpose: real anodes have no
+generator radius. Two image-based candidates have now failed
+(`cpsd_r50max`: non-monotone, no converged resolution; raw EDT: fails to
+track local thickness in magnitude, ~3× compressed).
+
+### 3. Explicit choice: path (b)
+
+A reliable *measured* particle-size proxy is not achievable at this domain
+size and resolution with the tools in hand. Therefore:
+
+- P2-C's **mass-conservation claim** is gated on the exact generator
+  diagnostic above — and **passes**.
+- P2-C's **real-data size-comparability claim** is **explicitly deferred to
+  the real-dataset calibration phase**, which was out of scope for platform
+  v2 in every version of this spec.
+- Opening-based granulometry is **not** built. It samples the same discrete
+  radii that broke `cpsd_r50max` and would need the identical 5-point
+  non-monotone ladder. There is **no consumer for a validated image-based
+  size metric until real-data calibration begins**, so building one now is
+  effort ahead of need — the same sunk-cost pattern already avoided twice in
+  this thread (the ungrounded 6–8 coordination target; the topology machinery
+  that proved unnecessary).
+
+**Platform v2 is qualified for its Ni-generator purpose** (P2-A pass, P2-B
+pass, P2-C mass-conservation pass), with size-comparability carried forward
+as a **named open obligation** of the calibration phase — not a silently
+dropped requirement.
+
+### 4. The variance-equivalence argument — written out, and it does not survive
+
+No ceiling is proposed under either path, because the logic a ceiling would
+rest on does not hold as stated:
+
+> The ±5% ceiling would bound a **within-structure perturbation** — same seed,
+> same geometry, base vs widened, differing only by a deliberate intervention
+> — using a bound derived from **between-ROI natural variability** of real
+> anodes, where different ROIs are different regions of different material
+> with independent microstructural realisations. These are different sources
+> of variance, and there is no general reason the first should be bounded by
+> the second. Between-ROI spread reflects sampling heterogeneity; within-
+> structure deviation reflects the magnitude of a controlled intervention. A
+> structure could be perfectly comparable to real material in its size
+> distribution while responding to widening by more than the between-ROI CV,
+> or vice versa. The defensible use of the real spread is as a
+> **measurement-noise reference** — a deviation far below real ROI-to-ROI
+> scatter is unlikely to be *resolvable* against real data — not as a *bound*
+> on how much a controlled perturbation may change a structure.
+
+Under that corrected reading, the real CV (6.7–10.0%) says the ~6% generator
+shrink sits **at the edge of what would be resolvable** against real
+between-ROI scatter: useful context, not a pass/fail criterion. Any future
+ceiling should be justified from what change is *acceptable* on physical
+grounds, not from what is *typical between unrelated ROIs*.

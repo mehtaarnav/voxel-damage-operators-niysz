@@ -163,3 +163,41 @@ radius-shrink mechanism having less headroom at Φ_Ni=0.250 than it had at the
 Family B pilot's Φ_Ni≈0.32–0.33. Composition and topology (Gate P2-A) pass
 cleanly; the decoupling mechanism itself (Gate P2-C) does not yet, at this
 Φ_Ni.
+
+---
+
+## What `generator_radius_deviation` is and is NOT ground truth for (2026-08-10)
+
+Added because "verified against ground truth" was starting to appear
+unqualified in this project's records, and it is only half right.
+
+`generator_radius_deviation` = (r_final − r_base)/r_base, where r_final is
+the sphere radius the mass-conservation bisection actually applied. It is
+**exact ground truth for the input sphere-radius parameter** — no estimation,
+no resolution parameter, no image processing between the number and the thing
+it describes.
+
+**It is NOT ground truth for what a correct image-based local-thickness
+measurement of the final structure should read.** The final structure is the
+*union* of spheres and neck bars. Near a junction, neck material legitimately
+bulges into the region a thickness measure would count as particle body, so
+the local thickness of the realised solid is not simply a function of the
+sphere-radius parameter. A faithful image-based metric could correctly
+disagree with the generator radius, and that disagreement is expected to grow
+as necks widen — precisely the regime being tested.
+
+Consequence for the earlier finding that local thickness "overstates"
+(−9.56%/−7.54% vs a generator −6.25%/−5.58%) and raw EDT "understates"
+(−2.18%/−2.02%): the correct reading is that **the three measures disagree,
+and the generator value is not automatically the referee** for the two
+image-based ones. What can be said without overreach:
+
+- the generator number is exact *for the parameter it describes*;
+- the two image-based measures disagree with it in opposite directions and by
+  different amounts;
+- `cpsd_r50max` additionally failed a convergence test on its own terms
+  (non-monotone; no resolution with both seeds under 0.5 pp), which is a
+  defect independent of any comparison to the generator.
+
+Only the last is a demonstrated fault. The first two are a disagreement whose
+direction of error has not been established.
