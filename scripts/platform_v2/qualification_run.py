@@ -78,7 +78,14 @@ FRAC_WEAK, WEAK_RANGE, NORMAL_RANGE = 0.20, (4, 6), (12, 20)
 MIN_RATIO = 2.5
 
 SEEDS = [0, 1, 2, 3, 4]
-TARGET_RATIOS = [1.45, 2.0]      # "intermediate" (~1.3-1.6x) and "high" (~2.0x)
+# "intermediate" and "high". 1.45 -> 1.33 (2026-08-10, approved cheap fix):
+# the first qualification run showed all 5 seeds land on the 1.33x rung, so a
+# 1.45x nominal target failed the p10 criterion for every seed purely by
+# falling between achievable rungs -- the achievable ladder for this base
+# mixture at n_pairs=224 is {1.33x, 2.0x}. Since achieved ratio is the
+# scientific variable (preregistration.md #0c amendment C), the nominal label
+# is retargeted onto the rung the generator actually produces.
+TARGET_RATIOS = [1.33, 2.0]
 MAX_BISECT_ITER = 5
 P10_TOL_REL = 0.08
 

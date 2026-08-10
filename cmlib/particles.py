@@ -65,7 +65,17 @@ from skimage.feature import peak_local_max
 from skimage.segmentation import watershed
 
 SIGMA_VOX_DEFAULT = 0.4
-CPSD_SIZES_DEFAULT = 25          # must be an int/array; `sizes=None` is buggy
+
+# `sizes` must be an int/array; `sizes=None` is buggy (see module docstring).
+# RAISED 25 -> 100 (2026-08-10). sizes=25 quantizes the returned c-PSD into
+# bins ~6% wide in diameter terms -- comparable to the +-5% c-PSD gate itself,
+# which made per-structure deviations unreliable: on the platform-v2
+# qualification set, one seed measured -3.13% deviation at sizes=25 (a "pass")
+# but -9.18% at sizes=200 (a clear fail), and only 8 distinct c-PSD values
+# appeared across 15 structures. Deviations had substantially converged by
+# sizes=100. Anything comparing c-PSD against a few-percent tolerance MUST use
+# a converged `sizes`; 25 is only safe for coarse/qualitative use.
+CPSD_SIZES_DEFAULT = 100
 
 
 def watershed_particles(mask: np.ndarray, spacing_nm, min_distance: int = 4,
