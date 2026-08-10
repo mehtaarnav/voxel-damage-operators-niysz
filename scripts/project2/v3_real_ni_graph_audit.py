@@ -91,7 +91,10 @@ def spans_after(H, removed):
 
 def main():
     rows, curves = [], []
-    for key, folder, grain, state, nz, ny, nx_, vz, vy, vx in SAMPLES:
+    for key, folder, grain, state, _nx, _ny, _nz, _vx, _vy, _vz in SAMPLES:
+        # SAMPLES stores (nx,ny,nz),(vx,vy,vz); the LOADED array is (z,y,x).
+        nz, ny, nx_ = _nz, _ny, _nx
+        vz, vy, vx = _vz, _vy, _vx
         if state != "pristine":
             continue
         counts = label_histogram(folder)["counts"]
