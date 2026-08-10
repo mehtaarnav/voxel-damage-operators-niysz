@@ -555,3 +555,71 @@ shrinkage affects retention."*
 by a known ~5–7% primary sphere shrinkage."* The phrase **"fixed particle
 size" is not to be used** unless a validated size condition backs it — which,
 per P2-C2, it currently does not.
+
+## 0g. Frozen before any widened structure is inspected under damage (2026-08-10)
+
+Committed **before** the p10-group damage experiment is run. Nothing in the
+p10-group experiment may proceed until this section is in the repository.
+
+### 1. Damage-seed averaging requirement
+
+The base-only bisection found **within-structure damage-seed variance
+comparable to across-structure variance** — transition midpoints of
+8.5 / 9.5 / 8.5 occurred *within a single structure*. The damage process is
+itself stochastic, so a retention comparison built on one damage seed per
+structure would conflate structural effect with damage-process noise.
+
+Therefore, binding on the p10-group experiment:
+
+- **Minimum 3 damage seeds per structure; 5 if compute remains cheap.**
+- **If a branch decision would depend on a group difference smaller than 1.0
+  damage round, the comparison must be re-run or completed to 5 damage seeds
+  before it is interpreted.**
+- **No single-damage-seed comparison per structure is permitted.**
+- Damage seeds must be **independent of structure seeds** and recorded
+  explicitly.
+- Required reporting:
+  - per-damage-seed transition midpoints;
+  - per-structure mean transition midpoint;
+  - within-structure damage-seed variance;
+  - across-structure variance;
+  - group means with seed-level spread.
+
+### 2. Status of D4 parameters `p_erode = 0.35`, `expand_vox = 1`
+
+Recorded explicitly so their provenance is never mistaken for derivation:
+
+- Both **originated in the E0 spike**.
+- Neither was **re-derived from first principles** for Platform v2.
+- Both are now **deliberately frozen** as part of the D4 operator definition
+  for the Platform-v2 damage experiment.
+- **The intensity variable expected to shift with geometry is `n_rounds`**,
+  not `p_erode` or `expand_vox`.
+- The Platform-v2 base-only bisection result — transition at **8.77 ± 0.59
+  with no bracket expansion required on any of 15 runs** — is accepted as
+  evidence that this frozen parameterization produces a **resolvable**
+  transition on the new geometry.
+- **Changing `p_erode` or `expand_vox` defines a different damage model and
+  requires a new amendment.**
+
+**Additional obligation.** If the p10-group experiment yields a **positive or
+weak-positive** branch, a **damage-parameter sensitivity check is required
+before any causal claim**: at minimum one alternative `p_erode`, or one
+alternative expansion/erosion budget, demonstrating the qualitative result is
+not specific to the exact E0 parameterization. A positive result under a
+single frozen parameterization is not a causal claim.
+
+### 3. TPB magnitude caveat — corrected
+
+The earlier wording "8–10× real" **understated the low end of the real
+range** and is superseded by:
+
+> Platform v2 TPB density after minimal YSZ/pore placement is
+> **19.4–20.5 µm⁻²**. This is roughly **7.3–19.2× the real-anode TPB range of
+> 1.07–2.65 µm⁻²** (ratio bounds computed as 19.4/2.65 and 20.5/1.07),
+> depending on which real anode and which TPB convention is used. This is
+> expected from the smoothed random placement field with a small correlation
+> length, and is **acceptable for internal percolation/damage work**.
+> **TPB magnitude is not yet a real-data-comparable quantity.** Real-data TPB
+> comparability belongs with the deferred calibration-phase obligations
+> (see P2-C2, §0f).

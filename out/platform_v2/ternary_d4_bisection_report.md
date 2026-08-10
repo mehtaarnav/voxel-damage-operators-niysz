@@ -27,8 +27,11 @@ the non-Ni remainder targeted at the medium anode's own
 - **P_span unchanged to 1e−12 on every seed.**
 - **TPB nonzero and structurally plausible: 19.4–20.5 µm⁻².**
 
-**One honest caveat on TPB magnitude.** These values are ~8–10× the real
-anodes' 1.07–2.65 µm⁻² (`REPORT.md`). That is expected and not a placement
+**One honest caveat on TPB magnitude (corrected 2026-08-10 — the earlier
+"8–10×" understated the low end of the real range).** These values are
+roughly **7.3–19.2×** the real-anode range of 1.07–2.65 µm⁻² (`REPORT.md`),
+ratio bounds being 19.4/2.65 and 20.5/1.07, depending on which real anode and
+which TPB convention is used. That is expected and not a placement
 failure: the YSZ/pore field is a smoothed random field with a 3-voxel
 correlation length, which produces far more Ni/YSZ/pore triple contacts than
 a real sintered microstructure with micron-scale domains. Placement was
