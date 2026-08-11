@@ -379,3 +379,70 @@ def apply_o5v2(ni_mask, ysz_mask, n_rounds, seed,
     n0, n1 = int(ni_mask.sum()), int(ni.sum())
     return ni, dict(voxels_pre=n0, voxels_post=n1, voxels_moved=moved,
                     volume_error=abs(n1 - n0) / max(n0, 1), k_move=k_move)
+
+
+# ------------------------------------------------------- O5v2 Option B
+# Greedy (zero-temperature) KMC agglomeration. Frozen in
+# out/project2/PREREG_O5V2_OPTIONB.md (c414e63) before implementation.
+#
+# EXACT dA, derived rather than proxied -- this is what Option A got wrong.
+# Removing surface voxel a changes exposed Ni faces by 2*nb(a) - 6; adding at
+# pore site b by 6 - 2*nb(b), where nb counts Ni 6-neighbours. Hence
+#     dA = 2*(nb(a) - nb(b))       and   dA <= 0  <=>  nb(a) <= nb(b).
+# Curvature RANK was a proxy for this; the identity is exact. dV = 0 by
+# construction (one voxel out, one in). gamma=1.0, lambda enforced structurally,
+# kT=0 so no dA>0 move is ever accepted -- gate (ii) cannot fail by construction
+# up to the non-adjacency condition, which is enforced below.
+O5V2B_GAMMA, O5V2B_KT = 1.0, 0.0
+
+
+def apply_o5v2b(ni_mask, ysz_mask, n_rounds, seed,
+                p_coarsen=O5V2_P_COARSEN):
+    ni = ni_mask.copy()
+    rng = np.random.default_rng(seed)
+    n_surf0 = int((ni & ~ndi.binary_erosion(ni, structure=STRUCT6)).sum())
+    k_move = int(round(p_coarsen * n_surf0))
+    proposed = accepted = 0
+    for _ in range(max(0, int(n_rounds))):
+        if k_move <= 0:
+            break
+        nb = ndi.convolve(ni.astype(np.int16), STRUCT6.astype(np.int16),
+                          mode="constant", cval=0)
+        surf = ni & ~ndi.binary_erosion(ni, structure=STRUCT6)
+        front = (~ni) & (~ysz_mask) & ndi.binary_dilation(ni, structure=STRUCT6)
+        si = np.flatnonzero(surf.ravel())
+        fi = np.flatnonzero(front.ravel())
+        if si.size == 0 or fi.size == 0:
+            break
+        nba, nbb = nb.ravel()[si], nb.ravel()[fi]
+        a_ord = si[np.argsort(nba, kind="stable")]          # fewest Ni nbrs
+        b_ord = fi[np.argsort(-nbb, kind="stable")]         # most Ni nbrs
+        nba_s = np.sort(nba, kind="stable")
+        nbb_s = -np.sort(-nbb, kind="stable")
+        k = min(k_move, a_ord.size, b_ord.size)
+        flat = ni.ravel()
+        shp = ni.shape
+        moved_this = 0
+        for t in range(k):
+            proposed += 1
+            if nba_s[t] > nbb_s[t]:      # dA > 0 -> reject (and all later)
+                break
+            ia, ib = int(a_ord[t]), int(b_ord[t])
+            za, ya, xa = np.unravel_index(ia, shp)
+            zb, yb, xb = np.unravel_index(ib, shp)
+            if abs(int(za) - int(zb)) + abs(int(ya) - int(yb)) + \
+               abs(int(xa) - int(xb)) <= 1:
+                continue                  # adjacency breaks the dA algebra
+            flat[ia] = False
+            flat[ib] = True
+            accepted += 1
+            moved_this += 1
+        if moved_this == 0:
+            break
+    n0, n1 = int(ni_mask.sum()), int(ni.sum())
+    return ni, dict(voxels_pre=n0, voxels_post=n1,
+                    volume_error=abs(n1 - n0) / max(n0, 1),
+                    volume_delta_vox=n1 - n0, k_move=k_move,
+                    proposed=proposed, accepted=accepted,
+                    acceptance_rate=accepted / max(proposed, 1),
+                    gamma=O5V2B_GAMMA, kT=O5V2B_KT)
