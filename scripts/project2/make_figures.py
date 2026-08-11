@@ -5,8 +5,10 @@ out/phase6. Nothing is hard-coded except axis limits and annotation text.
 Run `python scripts/project2/o5v2_transcribe.py` first if
 out/project2/o5v2_area_barrier.csv is absent.
 
-Outputs six PDFs (vector, for the LaTeX build) and six PNGs (for the markdown
-preview) into out/writeup/figs.
+Outputs six PDFs (vector, for the LaTeX build) and six PNGs (for preview)
+into out/writeup/figs. File names match the figure numbers the manuscript
+assigns, so figN_*.pdf is Figure N; the blocks below are ordered by data
+dependency rather than by figure number.
 """
 import os
 import sys
@@ -86,7 +88,7 @@ save(fig, "fig1_measured_signature")
 
 
 # --------------------------------------------------------------------------
-# Figure 2 -- the outcome metric rewrites its own denominator.
+# Figure 3 -- the outcome metric rewrites its own denominator.
 # --------------------------------------------------------------------------
 val = pd.read_csv(os.path.join(P2, "c1real_o6_validity.csv"))
 rni = pd.read_csv(os.path.join(P2, "c1real_rni_gate.csv"))
@@ -124,11 +126,11 @@ for a in ax:
 panel(ax[0], "a", dx=-0.14)
 panel(ax[1], "b", dx=-0.14)
 fig.tight_layout(w_pad=2.0)
-save(fig, "fig2_metric")
+save(fig, "fig3_metric")
 
 
 # --------------------------------------------------------------------------
-# Figure 3 -- voxel erosion manufactures TPB before destroying it.
+# Figure 4 -- voxel erosion manufactures TPB before destroying it.
 # --------------------------------------------------------------------------
 fig, ax = plt.subplots(figsize=(COL_W, 2.5))
 for a in ANODES:
@@ -150,11 +152,11 @@ ax.annotate("destroyed", xy=(7.2, 0.25), xytext=(4.9, 0.09),
 ax.legend(loc="lower left", bbox_to_anchor=(-0.02, -0.02))
 tidy(ax, minor_y=False)
 fig.tight_layout()
-save(fig, "fig3_tpb")
+save(fig, "fig4_tpb")
 
 
 # --------------------------------------------------------------------------
-# Figure 4 -- lattice cuts at a full cross-section; real networks do not.
+# Figure 2 -- lattice cuts at a full cross-section; real networks do not.
 # --------------------------------------------------------------------------
 lat = pd.read_csv(os.path.join(P2, "audit_ni_vulnerability.csv"))
 real = pd.read_csv(os.path.join(P2, "c1real_results.csv")).drop_duplicates(
@@ -186,7 +188,7 @@ ax.set_ylabel("minimum cut, fraction of throats")
 ax.text(0.5, 0.088, "5 seeds, zero variance", fontsize=6.5, color=SYNTH)
 ax.legend(loc="lower left")
 fig.tight_layout()
-save(fig, "fig4_mincut")
+save(fig, "fig2_mincut")
 
 
 # --------------------------------------------------------------------------

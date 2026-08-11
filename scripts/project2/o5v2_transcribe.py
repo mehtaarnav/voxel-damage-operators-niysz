@@ -9,6 +9,13 @@ is recomputed: the values are copied verbatim from
 
 and the `source` column records which. Pristine S_spec = 0.45052 and pristine
 neck volume = 63 voxels are the n = 0 rows, identical in both reports.
+
+`acceptance_rate` is empty, and therefore NaN on read, for every
+curvature-ranked row. That means *not applicable*, not *missing*: the
+curvature-ranked rule has no accept/reject step to have a rate. Only the
+greedy rows carry a value, and it is 0.0 in all of them, which is the
+measurement the manuscript's "accepts no move" claim rests on. Do not
+aggregate this column across operators.
 """
 import csv
 import os

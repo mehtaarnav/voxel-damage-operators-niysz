@@ -67,7 +67,7 @@ destroying it. Qualification gates demanding perfect pristine connectivity are
 unrepresentative of real electrodes, which carry \SIrange{1.2}{11.2}{\percent}
 disconnected nickel. A jittered regular lattice has a minimum cut of exactly
 one full cross-section with zero seed-to-seed variance, whereas real networks
-fail at \SIrange{1}{2}{\percent} of throats through small non-planar cuts.
+fail at \SIrange{0.5}{3}{\percent} of throats through small non-planar cuts.
 Curvature-ranked moves do not deliver the area reduction they are assumed to
 deliver. Each was invisible on synthetic test structures and each would
 silently corrupt a published study of this kind.
@@ -89,8 +89,9 @@ through microstructural change. Nickel coarsens and can lose the percolating
 network that carries electronic current \cite{simwonis2000}; the ceramic
 scaffold fractures under redox cycling \cite{sarantaridis2007}; and the
 triple-phase boundary (TPB), the one-dimensional locus where nickel, zirconia
-and pore meet and where the electrochemical reaction proceeds, is consumed
-\cite{monaco2019}. All three are geometric processes acting on a
+and pore meet and where the electrochemical reaction proceeds, is consumed as
+the nickel phase reorganises \cite{monaco2019}. All three are geometric
+processes acting on a
 microstructure that FIB-SEM and X-ray nano-tomography now resolve routinely,
 which makes a particular computational strategy very attractive: take a
 segmented tomogram, apply a damage operator to the label field, and track how
@@ -101,9 +102,9 @@ data structure the experimentalist already has. It is also, as far as we can
 tell, less examined than the continuum alternative. Phase-field treatments of
 Ni coarsening in this system have been developed and progressively validated
 over more than a decade, from the early three-phase simulations on
-experimentally acquired anode functional layers \cite{chen2011}, through
-explicit validation studies against ex-situ imaging of the same specimen
-\cite{trini2021}, to quantitative simulations initialised on ptychographic
+experimentally acquired anode functional layers \cite{chen2011}, through work
+directed explicitly at validating such a model \cite{trini2021}, to
+quantitative simulations initialised on ptychographic
 nano-tomograms with measured thermophysical parameters \cite{yang2023} and
 multiphase-field models coupled to transmission-line performance estimates on
 FIB-SEM reconstructions \cite{hoffrogge2023}. Discrete methods have been
@@ -112,16 +113,19 @@ NiO--YSZ sintering was calibrated and validated against measured microstructure
 \cite{zhou2023}. What is comparatively thin is a systematic account of what
 happens when a discrete, voxel-level operator is used for the degradation
 problem specifically, and of how the conventions that surround such an
-operator---the connectivity metric, the qualification gate on the test
-structure, the validity criterion on the operator itself---interact with each
-other.
+operator interact with each other: the connectivity metric, the
+qualification gate on the test structure, and the validity criterion on the
+operator itself.
 
 This paper is that account, and it is negative in its first-order result. We
 set out to identify which damage mechanism reproduces a measured degradation
-signature in three Ni--YSZ anodes, and we did not find one. Two principal
-geometry-based operator classes were tested to a conclusion and neither
-reproduced the ordering; two further routes closed before a mechanism test was
-reached. Along the way six specific ways in which this class of simulation
+signature in three Ni--YSZ anodes, and we did not find one. One operator
+reached a mechanism verdict on real tomograms, and reversed the measured
+ordering rather than reproducing it. Three more were run to a conclusion on a
+synthetic platform that we then had to disqualify. Four further routes closed
+before any mechanism test was reached, two because the operator failed its own
+validity gate and two because the data cannot pose the question. Along the way
+six specific ways in which this class of simulation
 silently misleads were identified and measured. We think the second finding is
 the more useful one, and the paper is organised around it, but the two are not
 separable: the failure modes were found by running the programme that failed,
@@ -143,9 +147,9 @@ from how the data were acquired rather than from how they were analysed.
 Medium versus coarse is not resolved on the nickel side: the ordering flips
 depending on whether percolation is defined by two-face spanning or by
 reachability from one face. And the published TPB series is not monotone,
-since coarse (0.608) exceeds medium (0.586). Only the two-level statements
----\emph{fine retains nickel percolation worst} and \emph{fine retains TPB
-best}---are defensible, and those are the only claims we test against.
+since coarse (0.608) exceeds medium (0.586). Only the two-level statements,
+\emph{fine retains nickel percolation worst} and \emph{fine retains TPB
+best}, are defensible, and those are the only claims we test against.
 
 %======================================================================
 \section{Materials and methods}
@@ -159,6 +163,15 @@ Stacks are \numrange{0.48}{1.11} gigavoxels at pitches of
 \SIrange{19.53}{29.14}{\nano\metre} \cite{pecho2015transport,pecho2015tpb}.
 Phase labelling was verified against the published volume fractions, with a
 worst deviation of \SI{0.20}{\percent} across eighteen values.
+
+Damage operators were applied to cubic regions of interest rather than to
+whole stacks, for tractability. Three non-nested regions were taken from each
+anode, at \SI{8}{\micro\metre} for fine and medium. Coarse required
+\SI{12}{\micro\metre} to reach the pre-registered floor of 150 graph nodes,
+and \SI{12}{\micro\metre} is also the largest cube the coarse stack admits,
+since it is only \SI{13.3}{\micro\metre} deep. Region size was frozen before
+any damage was applied and is not varied anywhere in this work; the resulting
+single-scale limitation is restated in Section~\ref{sec:limits}.
 
 The pristine and degraded stacks are different specimens (Rx36/Rx37/Rx38
 against Rx41-1/Rx41-2/Rx41-3), not one volume imaged twice. Every retention
@@ -174,7 +187,7 @@ of the transport axis; $\Pspan$ is the fraction of phase voxels in such a
 cluster, and $\Preach$ the fraction reachable from one face. The
 implementation recovers the simple-cubic site-percolation threshold as
 $0.31218$ after finite-size extrapolation, against a reference value of
-$0.3116077$ \cite{xu2014}.
+$0.3116077$ \cite{wang2013}.
 
 \subsection{Network extraction}
 
@@ -202,17 +215,19 @@ values.
 
 \subsection{Damage operators}
 
-Two operator families were run to a conclusion. The first is stochastic
-surface erosion: at each round, every nickel voxel on the phase boundary is
+Two operator families were carried onto real tomograms. The first is
+stochastic surface erosion: at each round, every nickel voxel on the phase boundary is
 removed independently with probability $p_{\mathrm{erode}}=0.35$, uniformly
 over surface sites with no curvature weighting, after which the largest
 connected component is retained. A variant carrying an oxidative dilation step
 was tested and rejected on validity grounds (Section~\ref{sec:pruning}). The
 second is volume-conserving coarsening, in which a nickel voxel is removed
 from one site and added at another in the same round, so that the phase volume
-is exactly preserved. Two move-selection rules were implemented, both
-pre-registered: ranking candidate sites by a curvature proxy, and greedy
-acceptance of a move only when it does not increase exposed area.
+is exactly preserved. Three move-selection rules were implemented, all
+pre-registered. The first ranks sites by a local nickel-density proxy for
+curvature and was run on synthetic structures; the second ranks sites by a
+curvature proxy on an analytic test body; the third accepts a move only when
+it does not increase exposed area.
 
 Three further operators were run on a synthetic platform whose nickel
 phase is a jittered regular lattice of spheres joined by explicit necks and
@@ -237,8 +252,8 @@ Following the discovery described in Section~\ref{sec:pruning} we adopted
 \end{equation}
 which is invariant to the deletion of isolated material, monotone
 non-increasing under any removal operator, and directly comparable to measured
-retention. Its mandatory sanity check---that $\Rni$ evaluated on the undamaged
-structure equals the pristine spanning fraction---holds to
+retention. Its mandatory sanity check, that $\Rni$ evaluated on the undamaged
+structure equals the pristine spanning fraction, holds to
 $0.00\times10^{0}$ in all three anodes.
 
 \subsection{Statistics and pre-registration}
@@ -320,8 +335,8 @@ Widening the lower tail of the neck-size distribution by \num{1.33} and
 8.54 rounds to 8.50 and 8.50, a change of $-0.04$ rounds against a
 pre-registered interpretability threshold of 1.0; 74 of 75 bisections returned
 exactly 8.5. Severing every throat in the lower quartile of the size
-distribution---100\% of candidates, at a cost of \SIrange{0.6}{5.3}{\percent}
-of the nickel volume---produced no percolation failure whatever, with
+distribution (100\% of candidates, at a cost of \SIrange{0.6}{5.3}{\percent}
+of the nickel volume) produced no percolation failure whatever, with
 $\Pspan=1.0000$ at the maximum intensity in 15 of 15 structures. Progressive
 fracture of sintered YSZ contacts did separate the classes, by 2.87 rounds in
 the predicted direction with non-overlapping seed ranges, and a
@@ -333,28 +348,37 @@ main-arm result would have read as a confident positive.
 
 A graph audit run to explain the first two nulls found something more general
 than the nulls themselves. The minimum source--sink cut of the synthetic
-nickel network is exactly one complete lattice cross-section---36, 25 and 16
-edges for the three classes, which are $6^2$, $5^2$ and $4^2$---in every one
+nickel network is exactly one complete lattice cross-section: 36, 25 and 16
+edges for the three classes, which are $6^2$, $5^2$ and $4^2$, in every one
 of fifteen structures, with zero seed-to-seed variance
 (Fig.~\ref{fig:mincut}). A jittered regular lattice has no locally weak plane:
 every cross-section is statistically identical, so the minimum cut is a plane
 and its size is fixed by the geometry rather than by the microstructure.
 Removing half of all necks in random or increasing-area order still leaves
 \SIrange{91}{97}{\percent} of the nickel in the spanning cluster, while a
-targeted cut breaks the network at \SIrange{5.8}{7.1}{\percent} of throats,
-a factor of about eight apart. The critical edges overlap the lower-quartile
+targeted cut breaks medium at \SI{5.8}{\percent} of throats and coarse at
+\SI{7.1}{\percent}, a factor of about eight apart. Fine cannot be broken by
+neck removal at any budget. Jitter of 0.15 of the lattice pitch lets
+neighbouring spheres approach to within less than their combined radii, so
+\SI{13.1}{\percent} of fine's bonds are carried by direct sphere overlap
+independent of their neck; severing the graph minimum cut leaves the voxel
+mask spanning at exactly 1.0000 in all five seeds. The graph model understates
+the platform's connectivity, and it understates it most for the class the
+study needed to be most fragile. The critical edges overlap the lower-quartile
 neck population at 0.250, 0.280 and 0.188 against a chance expectation of
 0.25, which is why severing the narrow necks did nothing: in this architecture
 the narrow necks are not load-bearing.
 
 \begin{figure}[tb]
   \centering
-  \includegraphics[width=\linewidth]{fig4_mincut.pdf}
+  \includegraphics[width=\linewidth]{fig2_mincut.pdf}
   \caption{Minimum source--sink cut as a fraction of all throats, logarithmic
   axis. The synthetic lattice cuts at exactly one full cross-section, at the
   same fraction in all five structure seeds of each class. Real regions of
-  interest cut at \SIrange{1}{2}{\percent} of throats with genuine
-  region-to-region spread. Data: \texttt{audit\_ni\_vulnerability.csv},
+  interest cut at \SIrange{0.55}{0.67}{\percent} (coarse),
+  \SIrange{1.41}{1.96}{\percent} (fine) and \SIrange{2.21}{3.02}{\percent}
+  (medium) of throats, with region-to-region spread within every anode.
+  Data: \texttt{audit\_ni\_vulnerability.csv},
   \texttt{c1real\_results.csv}.}
   \label{fig:mincut}
 \end{figure}
@@ -372,6 +396,17 @@ statistically homogeneous at large scale and the cut plane merely thins; the
 property the lattice lacks is positional disorder, which cannot be created by
 deleting bonds from a periodic grid.
 
+That conclusion retracts the three mechanism results above, and we would
+rather say so than leave them standing. The neck-widening and neck-severing
+nulls are explained by the minimum-cut measurement: an operator confined to
+the lower quartile of the throat distribution was attacking edges that carry
+no more load than any other quartile, on a network that only a globally
+coordinated cut can break. Those are nulls about the platform. The ceramic
+fracture result is disqualified independently by its own matched-fragility
+control. None of the three is evidence about real electrodes, and none is
+counted as an eliminated mechanism anywhere in this paper. What survives from
+the synthetic phase is the diagnosis of why it could not work.
+
 The second failure mode surfaced only when the operators were moved to real
 data. Measured pristine spanning fractions per region are
 0.9821/0.9754/0.9877 (fine), 0.9713/0.9446/0.9554 (medium) and
@@ -388,27 +423,45 @@ work.
 \subsection{The outcome metric rewrites its own denominator}
 \label{sec:pruning}
 
-The spanning fraction divides spanning-cluster voxels by total phase voxels.
-Damage operators conventionally retain only the largest connected component,
-on the physical grounds that isolated nickel is electrically dead. The two
-conventions are individually reasonable and jointly circular. Pruning deletes
-exactly the non-spanning voxels, so after pruning the surviving component
-\emph{is} the spanning one and $\Pspan$ equals unity identically. The operator
-rewrites the denominator of the metric used to judge it. This is the third
-failure mode and the one that cost us the most time.
+The spanning fraction divides spanning-cluster voxels by total phase voxels,
+which is how percolation is reported for this dataset and for electrodes
+generally \cite{pecho2015transport}. Damage operators conventionally retain
+only the largest connected component, on the physical grounds that isolated
+nickel is electrically dead; the same reasoning underlies the standard
+partition of electrode microstructure into active, dead-end and isolated
+clusters \cite{chen2011}. Neither convention is ours and neither is wrong.
+Together they are circular. Pruning deletes exactly the non-spanning voxels,
+so after pruning the surviving component \emph{is} the spanning one and
+$\Pspan$ equals unity identically. The operator rewrites the denominator of
+the metric used to judge it. This is the third failure mode and the one that
+cost us the most time.
 
-On real regions, pristine $\Pspan$ of 0.9821, 0.9713 and 0.8878 became exactly
-1.0000 at the first damage step, in two independently implemented operators
-(Fig.~\ref{fig:metric}a). Our first diagnosis attributed this to an oxidative
-dilation step, on the reasoning that dilating nickel into pore would bridge
-the disconnected fraction. That diagnosis was wrong. Removing the dilation
-step changed almost nothing---the fine anode's TPB inflation moved from
-15.24 to 14.80 and $\Pspan$ remained exactly 1.0000---because the cause is the
-pruning step, not the dilation.
+We state it as a finding rather than a slip because of how it behaved when we
+tried to fix it. Our first diagnosis was that an oxidative dilation step was
+bridging the disconnected fraction, which is physically plausible and would
+have made this an operator defect with an operator remedy. We removed the
+dilation step. The fine anode's TPB inflation moved from 15.24 to 14.80 and
+$\Pspan$ remained exactly 1.0000 in all three anodes
+(Fig.~\ref{fig:metric}a). The pathology survived a targeted, mechanistically
+motivated repair, because the cause was the pruning step and not the
+dilation.
+
+Three properties make it hard to catch. The metric is correct on the pristine
+structure, where across the nine regions it returns \numrange{0.888}{0.988}
+rather than unity. It is
+correct under any operator that does not prune. And on a test structure whose
+qualification gate forces pristine $\Pspan$ to unity it is unobservable, since
+the pruning step has nothing to delete. A group validating on synthetic
+structures would pass every check either convention imposes alone and would
+ship the combination.
+
+The behaviour is identical in two independently implemented operators: on real
+regions, pristine $\Pspan$ of 0.9821, 0.9713 and 0.8878 becomes exactly 1.0000
+at the first damage step in both.
 
 \begin{figure*}[tb]
   \centering
-  \includegraphics[width=\textwidth]{fig2_metric.pdf}
+  \includegraphics[width=\textwidth]{fig3_metric.pdf}
   \caption{(a) Spanning fraction under surface erosion on real regions of
   interest. Every anode reaches exactly unity at the first damage round and
   stays there, because largest-component pruning deletes the non-spanning
@@ -432,7 +485,7 @@ the pruning step nothing to remove.
 
 \begin{figure}[tb]
   \centering
-  \includegraphics[width=\linewidth]{fig3_tpb.pdf}
+  \includegraphics[width=\linewidth]{fig4_tpb.pdf}
   \caption{TPB density relative to pristine under surface erosion on real
   regions of interest. Stochastic single-voxel removal pits the nickel
   surface, and every new nickel/pore facet touching zirconia creates triple
@@ -446,10 +499,12 @@ The fourth failure mode is in the same runs. TPB density is multiplied by
 percent of pristine by the eighth (Fig.~\ref{fig:tpb}). The mechanism is
 discretisation: removing single voxels
 from a surface roughens it at the voxel scale, and each newly exposed
-nickel/pore facet that happens to touch zirconia adds triple line. The
-volume-conserving operator described below showed the same signature more
-mildly, doubling TPB while increasing nickel surface area by
-\SI{3.3}{\percent}.
+nickel/pore facet that happens to touch zirconia adds triple line. An earlier
+volume-conserving redistribution operator, run on synthetic structures, showed
+the same signature more mildly: at exactly conserved volume it raised nickel
+surface area by \SIrange{1.3}{6.0}{\percent} and roughly doubled TPB, with
+per-class ratios of 2.02, 2.10 and 2.26. Roughening is not particular to
+removal.
 
 That voxelised TPB estimates carry a resolution-dependent systematic bias is
 established \cite{jorgensen2014,shimura2016}. What is different here is that
@@ -477,8 +532,9 @@ in the wrong direction.
   \includegraphics[width=\textwidth]{fig5_reversal.pdf}
   \caption{(a) Measured nickel percolation retention: fine is worst.
   (b) Erosion rounds to $\Rni<0.5$ on the same real microstructures, three
-  regions and three damage seeds per anode; bars are class means, points are
-  individual bisections. Fine is the \emph{last} anode to fail. (c) Transition
+  regions and three damage seeds per anode; points are individual bisections
+  and the horizontal bar is the class mean. Fine is the \emph{last} anode to
+  fail. (c) Transition
   against pristine specific nickel surface area, one point per region. Data:
   \texttt{c1real\_results.csv}, \texttt{phase6\_comparison\_table.csv}.}
   \label{fig:reversal}
@@ -510,18 +566,21 @@ With the coarse regions properly sized at \SI{12}{\micro\metre}
 under-sized pass), the coarse anode is by a wide margin the most topologically
 fragile of the three: minimum cut fractions are
 \numrange{0.0141}{0.0196} (fine), \numrange{0.0221}{0.0302} (medium) and
-\numrange{0.0055}{0.0067} (coarse). Coarse is also the best retainer in
-service, at 0.947. Pristine topological fragility runs three to five times
-against the outcome it is supposed to predict. Taken with the absent surface
+\numrange{0.0055}{0.0067} (coarse). On class means the coarse minimum-cut
+fraction is 2.8 times below fine and 4.1 times below medium. Coarse is also
+the best retainer in service, at 0.947, so pristine topological fragility runs
+several-fold against the outcome it is supposed to predict. Taken with the
+absent surface
 area correlation, the sharpest statement this dataset supports about the
 measured ordering is a statement about what does not control it: neither the
 pristine topology nor the specific surface area does.
 
 Why the erosion operator behaves as it does is visible in the synthetic runs,
-where the volume loss at the transition was recorded. Fine loses
-\SI{74.4}{\percent} of its nickel before the network breaks, medium
-\SI{70.5}{\percent} and coarse \SI{62.8}{\percent}. Fine does erode faster,
-and its \num{1.26}-fold specific-surface-area advantage is real, but its
+where the volume loss at the transition was recorded. Median across 45
+bisections, fine loses \SI{74.4}{\percent} of its nickel before the network
+breaks, medium \SI{70.5}{\percent} and coarse \SI{62.8}{\percent}. Fine does
+erode faster, and its specific surface area really is the largest of the three
+on real regions, 0.159 against coarse's 0.136, but its
 network tolerates proportionally more volume loss before it stops spanning.
 High specific surface area and high connectivity redundancy are both
 consequences of fineness and they oppose each other in this outcome variable,
@@ -532,8 +591,8 @@ cancelling almost exactly.
 
 Surface erosion removes volume. Real coarsening does not: it conserves nickel
 and reduces surface area. A removal-only operator also cannot reproduce the
-measured change in nickel volume fraction, which is $-0.1006$, $-0.0165$ and
-$+0.0146$ across the three anodes and therefore \emph{increases} in the coarse
+measured change in nickel volume fraction, which is $-0.1006$, $-0.0164$ and
+$+0.0145$ across the three anodes and therefore \emph{increases} in the coarse
 case. So the natural next operator is volume-conserving, and it is the one
 that produces the most general result in this paper.
 
@@ -590,7 +649,7 @@ it is the one that Eq.~\eqref{eq:dA} was derived to repair.
 
 The second rule uses Eq.~\eqref{eq:dA} directly, accepting a swap only when
 $\Delta A \leq 0$. It cannot violate the gate by construction, and it accepts
-zero moves. Not a small number---zero, at every intensity tested, so that the
+zero moves. Not a small number: zero, at every intensity tested, so that the
 structure is returned bit-identical and the gate fails on the requirement of a
 \emph{strict} decrease. The reason is not an implementation fault. In a
 sphere--cylinder--sphere body the least convex surface voxel still has more
@@ -609,19 +668,33 @@ together, and any single-voxel perturbation raises the area first. One
 operator crosses that barrier without pricing it and violates the criterion;
 the other prices it and refuses to cross, and does nothing. The only bridge is
 finite-temperature acceptance of area-increasing moves, which is exactly what
-a monotonicity gate forbids. Any voxel-based coarsening study that both
+a monotonicity gate forbids. Any single-voxel-swap coarsening study that both
 enforces monotone surface-area reduction and claims to reproduce Rayleigh-type
 neck break-up is therefore either not producing that break-up or is violating
-its own validity criterion. The two cannot hold together.
+its own validity criterion. The two cannot hold together. This is the sixth
+and most general of the failure modes, and unlike the other five it is a
+statement about what an operator class can represent rather than about how a
+particular implementation goes wrong.
+
+Its generality does not rest on the test body. Equation~\eqref{eq:dA} is exact
+on any 6-connected lattice, and the local-minimum argument follows from two
+facts of geometry rather than from this dumbbell: a sphere minimises area at
+fixed volume, and a straight cylinder is stable against the displacement of
+any individual voxel. The runs in Fig.~\ref{fig:barrier} demonstrate the
+consequence on a case where the intended mechanism is unambiguous; they are
+not what establishes it. The scope is correspondingly specific. The argument
+covers operators that move one voxel at a time. It says nothing about
+morphological openings and closings, block moves, or any update that
+displaces a correlated set of voxels together, and a correlated update is
+precisely what could cross the barrier.
 
 What concealed this on the synthetic platform is simple: the operator was
 never asked to thin a neck against an explicit area budget, because the
 structures were fully connected and the validation was about connectivity. We
-stopped at this point, as the pre-registration required, and the sixth failure
-mode is the stopping condition itself. The agglomeration hypothesis is not
-falsified by any of this. It is untested, because the operator class available
-to us cannot represent it under a gate we still believe is the right gate for
-that operator class.
+stopped at this point, as the pre-registration required. The agglomeration
+hypothesis is not falsified by any of this. It is untested, because the
+operator class available to us cannot represent it under a gate we still
+believe is the right gate for that operator class.
 
 \subsection{Two hypotheses these data cannot pose}
 
@@ -639,8 +712,8 @@ zirconia volume fraction between the two ends of a stack, is met in one pair
 of three, and not in the fine anode, which is the anode the hypothesis
 concerns: gradients are 0.0042 and 0.0240 for fine in its two states, 0.0059
 and 0.0552 for medium, and 0.1035 and 0.1157 for coarse. Nickel content does
-vary strongly with depth in every stack---coarse post-redox spans 0.045 to
-0.494 across \SI{0.5}{\micro\metre} slabs---but in fine and in pristine medium
+vary strongly with depth in every stack, with coarse post-redox spanning 0.045 to
+0.494 across \SI{0.5}{\micro\metre} slabs, but in fine and in pristine medium
 that variation is not organised as a monotone interface gradient. It is
 spatial heterogeneity, which is a different thing. The likeliest explanation
 is prosaic. These sub-volumes are \SIrange{19}{24}{\micro\metre} across the
@@ -671,17 +744,48 @@ a quantity whose scale we had not yet measured. The remedy is to measure the
 strain distribution on one region first and pre-register the threshold as a
 quantile of it. We did not re-pick the threshold after seeing the
 distribution, because doing so would be fitting a threshold to produce damage.
-Independent support for the strain scale itself does exist---reviews of redox
+Independent support for the strain scale itself does exist. Reviews of redox
 cycling report approximately \SI{1}{\percent} linear expansion on the first
 complete oxidation of a Ni/YSZ composite \cite{sarantaridis2007}, against the
-\SI{0.65}{\percent} we froze---which establishes that the strain scale was not
-the error even though it does not rescue the run.
+\SI{0.65}{\percent} we froze. The strain scale was therefore not the error,
+though that does not rescue the run.
 
 %======================================================================
 \section{Discussion}
 %======================================================================
 
-The six failure modes share a structure worth naming. In each case a modelling
+\begin{table*}[tb]
+  \centering
+  \caption{The six failure modes, in the order the work encountered them.
+  Every one arose from a combination of individually defensible choices, and
+  every one was invisible on the synthetic platform for the reason given in
+  the last column.}
+  \label{tab:modes}
+  \small
+  \begin{tabular}{@{}c p{0.26\textwidth} p{0.31\textwidth} p{0.31\textwidth}@{}}
+    \toprule
+    & failure mode & what exposed it & what concealed it \\
+    \midrule
+    1 & lattice minimum cut is a plane & cut is exactly $6^2$, $5^2$, $4^2$
+      edges, zero variance & regular lattices were never asked to fail
+      locally \\
+    2 & gate demands perfect pristine connectivity & real electrodes carry
+      \SIrange{1.2}{11.2}{\percent} isolated Ni & synthetic structures were
+      built fully connected \\
+    3 & pruning fixes $\Pspan$ at unity & $\Pspan$ jumps to 1.0000 at the
+      first damage round & pristine $\Pspan$ was already 1.0000 by gate \\
+    4 & erosion manufactures TPB & TPB rises $7$--$15\times$ before
+      collapsing & platform TPB was already $\sim8\times$ inflated \\
+    5 & curvature rank $\neq$ area change & $\Sspec$ rises at $n=1$ under
+      both stencils & no explicit area budget was ever imposed \\
+    6 & area monotonicity excludes break-up & greedy rule accepts zero moves;
+      Eq.~\eqref{eq:dA} & the operator was never asked to thin a neck \\
+    \bottomrule
+  \end{tabular}
+\end{table*}
+
+The six failure modes share a structure worth naming, set out in
+Table~\ref{tab:modes}. In each case a modelling
 convention that is individually reasonable becomes wrong in combination with
 another, and the combination is invisible on the synthetic structures normally
 used for validation. Retaining only the largest connected component is
@@ -729,11 +833,15 @@ run before any validity gate is adopted.
 
 Discrete lattice methods are not thereby disqualified for this material
 either. A kinetic Monte Carlo model of NiO--YSZ sintering has been calibrated
-and validated against measured microstructure \cite{zhou2023}, and the reason
-it is not subject to our argument is instructive: it is a Monte Carlo method
-with finite-temperature acceptance, so it can cross an energy barrier that a
-greedy rule cannot. The barrier described here is a property of the acceptance
-rule, not of the lattice.
+and validated against measured microstructure \cite{zhou2023}, on the same
+lattice discretisation that carries our argument. The distinction that matters
+is not continuum against discrete but the acceptance rule: any scheme that
+accepts an energy-raising move with finite probability can cross the barrier
+of Eq.~\eqref{eq:dA}, and any scheme that refuses one cannot. A monotone
+area-reduction gate is a refusal, imposed as a validity criterion rather than
+chosen as a dynamics. That is why the impossibility is narrow, and it is also
+why it is easy to walk into: the gate looks like rigour and functions like a
+constraint on the physics.
 
 Two of our six modes have partial precedent and we do not claim them as new.
 The systematic error in TPB length computed from voxelised data is documented,
@@ -745,16 +853,19 @@ known, and appears in the source papers for this dataset as pristine
 percolation values below unity \cite{pecho2015transport}; what we add is the
 consequence, that a qualification gate demanding perfect pristine connectivity
 disqualifies the synthetic analogue as a place to discover metric pathologies.
-The remaining four---the pruning circularity, lattice minimum-cut planarity,
-the curvature-proxy failure and the area barrier---we have not found stated
+The remaining four (the pruning circularity, lattice minimum-cut planarity,
+the curvature-proxy failure and the area barrier) we have not found stated
 elsewhere, which is a statement about our search rather than a claim of
 priority.
 
 \subsection{What the negative result does and does not establish}
+\label{sec:limits}
 
-We tested two geometry-based operator classes to a conclusion and neither
-reproduces the measured ordering. We have not shown that no geometric
-mechanism can. We have specifically not shown that agglomeration is not the
+One operator class reached a mechanism verdict on real microstructures and
+reversed the measured ordering. The three synthetic mechanism tests are
+withdrawn with the platform that carried them. We have not shown that no
+geometric mechanism reproduces the ordering, and on the strength of one
+operator class on real data we could not. We have specifically not shown that agglomeration is not the
 physical cause of nickel percolation loss: Section~\ref{sec:barrier} says we
 could not test agglomeration with this operator class under this gate, which
 is a statement about the method and not about the material. Nor is anything
@@ -769,7 +880,7 @@ degraded stacks are different specimens, so every retention magnitude carries
 specimen variation and no paired quantity is available. The two $\Rni$
 thresholds are not independent, because the spanning cluster vanishes
 discontinuously and $\Rni$ crosses 0.50 and 0.10 within one round in most
-regions---which is itself a finding about how percolation fails in these
+regions, which is itself a finding about how percolation fails in these
 structures. Regions are single-scale at 8 or \SI{12}{\micro\metre}, the coarse
 anode being bounded above by a stack that is only \SI{13.3}{\micro\metre}
 deep. Graph metrics use frozen watershed parameters. Coarse YSZ throats have a
@@ -808,19 +919,22 @@ Eq.~\eqref{eq:dA}.
   connectivity are unrepresentative of electrodes carrying
   \SIrange{1.2}{11.2}{\percent} disconnected nickel; a jittered regular
   lattice cuts at exactly one full cross-section with zero variance, whereas
-  real networks cut at \SIrange{1}{2}{\percent} of throats; and
+  real networks cut at \SIrange{0.5}{3}{\percent} of throats; and
   curvature-ranked moves do not deliver the area reduction assumed of them.
 \item Stochastic surface erosion applied to real microstructures with a
   pruning-invariant metric reverses the measured degradation ordering: the
   fine anode is the last to lose percolation rather than the first.
 \item Neither pristine topology nor specific nickel surface area predicts the
-  measured ordering. The coarse anode is three to five times the most
-  topologically fragile of the three and is the best retainer in service.
-\item Real nickel networks fail at \SIrange{1}{2}{\percent} of throats through
-  small, region-variable, non-planar cuts. A synthetic generator intended to
-  reproduce this must reach mean coordination \numrange{3.4}{3.9} with
-  standard deviation \numrange{2.0}{2.4} and a connected-pair-distance
-  coefficient of variation near 0.41.
+  measured ordering. The coarse anode carries the smallest minimum cut of the
+  three, 2.8 times below fine and 4.1 times below medium on class means, and
+  is the best retainer in service.
+\item Real nickel networks fail at \SIrange{0.5}{3}{\percent} of throats
+  through small, region-variable, non-planar cuts, against a lattice that
+  fails at \SIrange{4.9}{7.1}{\percent} and always through a full
+  cross-section. A synthetic generator intended to reproduce real behaviour
+  must carry comparable positional disorder: coordination standard deviation
+  \numrange{1.8}{2.9} and a connected-pair-distance coefficient of variation
+  of \numrange{0.38}{0.45}.
 \end{enumerate}
 
 %======================================================================
@@ -838,13 +952,21 @@ the metric and TPB behaviour to \texttt{c1real\_o6\_validity.csv} and
 \texttt{audit\_ni\_vulnerability.csv}; the synthetic mechanism tests to
 \texttt{out/platform\_v2/p10\_group\_experiment.csv} and
 \texttt{out/project2/step2\_O2\_ceiling\_check.csv},
-\texttt{step2\_O3\_main.csv}, \texttt{step2\_O3\_control.csv}; the
-volume-conserving gate to \texttt{o5v2\_area\_barrier.csv}, transcribed by
-\texttt{scripts/project2/o5v2\_transcribe.py} from the two committed run
-reports; the redistribution and ceramic-fracture branches to
+\texttt{step2\_O3\_main.csv}, \texttt{step2\_O3\_control.csv}; the synthetic
+volume loss at the erosion transition to \texttt{step2\_O1\_main.csv} and the
+redistribution operator's surface and TPB ratios to
+\texttt{step2\_O5\_ceiling\_check.csv}; the
+volume-conserving gate to \texttt{o5v2\_area\_barrier.csv}; the redistribution
+and ceramic-fracture branches to
 \texttt{h1\_depth\_profiles.csv}, \texttt{h1\_layer\_summary.csv} and
-\texttt{csfm\_results.csv}. Figures regenerate with
-\texttt{python scripts/project2/make\_figures.py}.
+\texttt{csfm\_results.csv}; and the implementation-validation constants to
+\texttt{validation\_constants.csv}. The last two of those are transcriptions,
+by \texttt{scripts/project2/o5v2\_transcribe.py} and
+\texttt{transcribe\_validation.py}, of values that their runs reported in
+markdown rather than in a table; each row carries the report it came from.
+Figures regenerate with
+\texttt{python scripts/project2/make\_figures.py}, and file names match the
+figure numbers.
 
 Each pre-registration was committed before the run it governed and the chain
 of commits is recorded in the repository. Corrections made against our own
@@ -931,10 +1053,11 @@ C.~Herring,
 Effect of change of scale on sintering phenomena,
 Journal of Applied Physics 21 (4) (1950) 301--303.
 
-\bibitem{xu2014}
-X.~Xu, J.~Wang, Z.~Zhou, T.~M. Garoni, Y.~Deng,
-Geometric structure of percolation clusters,
-Physical Review E 89 (2014) 012120.
+\bibitem{wang2013}
+J.~Wang, Z.~Zhou, W.~Zhang, T.~M. Garoni, Y.~Deng,
+Bond and site percolation in three dimensions,
+Physical Review E 87 (2013) 052107; erratum Physical Review E 89 (2014)
+069907.
 
 \bibitem{gostick2017}
 J.~T. Gostick,
