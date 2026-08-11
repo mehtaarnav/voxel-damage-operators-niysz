@@ -5,9 +5,9 @@
 Target: *Acta Materialia* (Part B lead) · Alternate: *Journal of Power Sources* (Part A lead)
 
 Every quantity traces to a committed dataset and a version-control hash (§9).
-References carry explicit verification status (§10); none was checked against a
-source in this environment, and items marked ⚠ or ✂ must be resolved before
-submission.
+References carry explicit verification status (§10). R6–R8 and R10 were verified
+against sources; R9, R11 and R12 remain outstanding and must be resolved or cut
+before submission.
 
 ---
 
@@ -58,7 +58,7 @@ the triple-phase boundary (TPB), the one-dimensional locus where nickel, zirconi
 and pore meet and where the electrochemical reaction proceeds, is consumed.
 Because these are geometric processes acting on a resolvable microstructure, a
 natural computational approach is to apply a voxel-scale damage operator to a
-segmented tomogram and track how connectivity and TPB evolve ⚠[R7,R8].
+segmented tomogram and track how connectivity and TPB evolve ✓[R7,R8,R10].
 
 The experimental target is unusually sharp, and unusually counter-intuitive.
 Across the Holzer/Pecho anode series ✓[R1,R2] the finest microstructure retains
