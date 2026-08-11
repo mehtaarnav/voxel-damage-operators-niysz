@@ -109,14 +109,19 @@ quantitative simulations initialised on ptychographic
 nano-tomograms with measured thermophysical parameters \cite{yang2023} and
 multiphase-field models coupled to transmission-line performance estimates on
 FIB-SEM reconstructions \cite{hoffrogge2023}. Discrete methods have been
-applied on the fabrication side, where a kinetic Monte Carlo model of
-NiO--YSZ sintering was calibrated and validated against measured microstructure
-\cite{zhou2023}. What is comparatively thin is a systematic account of what
-happens when a discrete, voxel-level operator is used for the degradation
-problem specifically, and of how the conventions that surround such an
-operator interact with each other: the connectivity metric, the
-qualification gate on the test structure, and the validity criterion on the
-operator itself.
+applied on the fabrication side, where a Potts kinetic Monte Carlo model of
+NiO--YSZ sintering was calibrated against FIB-SEM microstructure and validated
+on volume fraction, specific surface area and triple-phase boundary density
+\cite{zhou2023}. Carrying that machinery over to degradation is less an open
+gap than an obvious next step, since it is the same free-energy formulation
+run under different driving conditions.
+
+What is less examined is what happens when a discrete operator is instead
+assembled for the degradation problem directly, and how the conventions that
+surround such an operator interact with each other: the connectivity metric,
+the qualification gate on the test structure, and the validity criterion on
+the operator itself. We did not adopt the established formulation, and this
+paper is in part an account of what that cost.
 
 This paper is that account, and it is negative in its first-order result. We
 set out to identify which damage mechanism reproduces a measured degradation
@@ -852,6 +857,32 @@ the impossibility is narrow, and it is also why it is easy to walk into: the
 gate looks like rigour and functions like a constraint on the physics. Had we
 imposed the same gate on the model of \cite{zhou2023}, it would have failed
 too.
+
+The comparison should be pressed past the sixth mode, because it does not stop
+there. Of the six in Table~\ref{tab:modes}, that model is exposed to none. It
+takes real reconstructions as input, so there is no jittered lattice with a
+planar minimum cut and no qualification gate demanding perfect pristine
+connectivity. It scores on volume fraction, specific surface area, tortuosity
+and TPB density rather than on a spanning fraction, so the circularity of the
+third mode has nothing to act on. Its evolution is driven by an energy
+functional rather than by stochastic voxel removal, so the roughening of the
+fourth does not arise, and it evaluates that energy explicitly rather than
+through a curvature proxy, which is the fifth. Three choices account for all
+six: real input, an explicit energy, and finite-temperature acceptance. We
+made none of them.
+
+We take that as the strongest available support for the prescription of this
+section rather than as an argument against it. The six modes are not exotic.
+They are what a study meets when it declines one or more of those three
+choices, and a reader is entitled to conclude that the established formulation
+should have been the starting point. What this paper adds is not the discovery
+that a better method exists but the measurement of what the worse one costs.
+Nothing in \cite{zhou2023} reports the effect of an area-monotonicity gate on
+a swap operator, because no such gate is imposed there.
+Equation~\eqref{eq:dA}, the zero acceptance rate and the bracketing pair of
+operators are a quantitative account of a trap that a well-designed study
+walks around without comment, and the value of documenting a trap does not
+depend on its being unavoidable.
 
 Two of our six modes have partial precedent and we do not claim them as new.
 The systematic error in TPB length computed from voxelised data is documented,
