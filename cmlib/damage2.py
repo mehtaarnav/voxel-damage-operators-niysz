@@ -320,3 +320,62 @@ def apply_o6(ni_mask, ysz_mask, n_rounds, seed, p_erode=O1_P_ERODE):
                        voxels_post=int(final.sum()),
                        voxels_removed_erosion=removed,
                        voxels_removed_islands=int(cur.sum() - final.sum()))
+
+
+# ---------------------------------------------------------------- O5v2
+# True volume-conserving curvature-driven agglomeration. Frozen in
+# out/project2/PREREG_O5V2.md (commit 304aa8a) before implementation.
+# NOT erosion (no p_erode) and NOT O5's density proxy, which roughened instead
+# of agglomerating. Matter leaves convex surface (high curvature, high chemical
+# potential) and joins concave necks -- the direction that reduces surface area
+# at fixed volume.
+O5V2_P_COARSEN = 0.03
+
+
+def _mean_curvature(ni, sites):
+    """k = (#pore 6-neighbours) - (#Ni 6-neighbours); + convex, - concave."""
+    nb = ndi.convolve(ni.astype(np.int8), STRUCT6.astype(np.int8),
+                      mode="constant", cval=0)
+    return (6 - 2 * nb)[sites]
+
+
+def apply_o5v2(ni_mask, ysz_mask, n_rounds, seed,
+               p_coarsen=O5V2_P_COARSEN, conn26=False):
+    """Remove the most-convex surface voxels, add at the most-concave neck
+    sites, exactly conserving Ni volume. `conn26` switches the curvature
+    stencil to 26-connectivity -- the pre-registered implementation fix if the
+    6-connectivity proxy fails the surface-area-reduction gate."""
+    st = ndi.generate_binary_structure(3, 3) if conn26 else STRUCT6
+    ni = ni_mask.copy()
+    rng = np.random.default_rng(seed)
+    n_surf0 = int((ni & ~ndi.binary_erosion(ni, structure=STRUCT6)).sum())
+    k_move = int(round(p_coarsen * n_surf0))
+    moved = 0
+    for _ in range(max(0, int(n_rounds))):
+        if k_move <= 0:
+            break
+        nb = ndi.convolve(ni.astype(np.int16), st.astype(np.int16),
+                          mode="constant", cval=0)
+        nmax = int(st.sum())
+        surf = ni & ~ndi.binary_erosion(ni, structure=STRUCT6)
+        pore = (~ni) & (~ysz_mask)
+        front = pore & ndi.binary_dilation(ni, structure=STRUCT6)
+        si = np.flatnonzero(surf.ravel())
+        fi = np.flatnonzero(front.ravel())
+        if si.size == 0 or fi.size == 0:
+            break
+        jit = rng.random(ni.size).astype(np.float32) * 1e-3
+        # convexity of a Ni voxel = few Ni neighbours -> nmax - 2*nb large
+        conv = (nmax - 2.0 * nb.ravel()[si]) + jit[si]
+        # concavity of a pore site = many Ni neighbours -> nb large
+        conc = nb.ravel()[fi] + jit[fi]
+        k = min(k_move, si.size, fi.size)
+        rm = si[np.argpartition(-conv, k - 1)[:k]]
+        add = fi[np.argpartition(-conc, k - 1)[:k]]
+        flat = ni.ravel()
+        flat[rm] = False
+        flat[add] = True
+        moved += k
+    n0, n1 = int(ni_mask.sum()), int(ni.sum())
+    return ni, dict(voxels_pre=n0, voxels_post=n1, voxels_moved=moved,
+                    volume_error=abs(n1 - n0) / max(n0, 1), k_move=k_move)
