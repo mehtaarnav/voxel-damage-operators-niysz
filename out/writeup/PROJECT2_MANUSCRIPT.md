@@ -427,6 +427,33 @@ B6 says we could not test agglomeration with this class of operator, which is a
 statement about the method. Continuum and phase-field formulations are not
 subject to the single-voxel argument of §3.1, and are the natural next approach.
 
+### 7.1 Relation to phase-field coarsening on real tomograms
+
+This is not a hypothetical alternative. Phase-field simulations of Ni coarsening
+have been carried out on three-dimensional Ni–YSZ reconstructions obtained by
+ptychographic nano-tomography ✓[R10], i.e. on precisely the class of data used
+here. That work is the appropriate point of comparison, and it sharpens our
+claim rather than weakening it: a phase-field formulation evolves a continuous
+order parameter under a free-energy functional, so it is *not* restricted to
+single-voxel swaps and can pass through the transient area increase that §3.1
+shows a discrete swap operator cannot. **Our impossibility is specific to
+voxel-swap operators validated by monotone area reduction; it does not extend to
+continuum formulations, and we do not claim that it does.**
+
+The practical implication is a recommendation rather than a criticism. Where a
+study needs coarsening, a continuum formulation is the sound choice. Where a
+study uses discrete voxel operators — as many connectivity and TPB studies do,
+because they act directly on the segmented label field — the compatibility check
+of §3.1 should be run before any validity gate is adopted.
+
+Independent support for the strain scale used in §6 also exists: reviews of
+redox cycling report approximately 1 % linear expansion on the first complete
+oxidation of a Ni/YSZ composite ✓[R8], against the 0.65 % we froze. That our
+value sits below the reported figure means the cumulative-strain model of §6 was,
+if anything, conservative — which does not rescue it, since the frozen threshold
+was the binding problem, but it does establish that the strain scale itself was
+not the error.
+
 ## 8. Conclusions
 
 1. Enforcing monotone surface-area reduction as a validity criterion structurally
@@ -489,20 +516,20 @@ changed — performed before an earlier null was accepted.
 
 | # | reference | status |
 |---|---|---|
-| R1 | Pecho et al., *Materials* — Ni–YSZ transport and percolation (PMC5512617) | ✓ |
-| R2 | Holzer et al., *Materials* — Ni–YSZ triple-phase boundary (PMC5455394) | ✓ |
-| R3 | Xu, Wang, Lv & Deng, *Phys. Rev. E* **89**, 012120 (2014) — simple-cubic site threshold 0.3116077 | ✓ |
-| R4 | Gostick, *Phys. Rev. E* **96**, 023307 (2017) — watershed network extraction | ✓ |
-| R5 | Rayleigh / Plateau — capillary instability of a liquid cylinder | ⚠ |
-| R6 | Nichols & Mullins — surface-diffusion break-up of solid cylinders, *J. Appl. Phys.* (1965) | ⚠ |
-| R7 | Simwonis, Tietz & Stöver, *Solid State Ionics* **132** (2000) — Ni coarsening | ⚠ |
-| R8 | Sarantaridis & Atkinson, *Fuel Cells* **7** (2007) — redox cycling review | ⚠ |
+| R1 | Pecho et al., *Materials* — Ni–YSZ transport and percolation (PMC5512617) | ✓ repo |
+| R2 | Holzer et al., *Materials* — Ni–YSZ triple-phase boundary (PMC5455394) | ✓ repo |
+| R3 | Xu, Wang, Lv & Deng, *Phys. Rev. E* **89**, 012120 (2014) — simple-cubic site threshold 0.3116077 | ✓ repo |
+| R4 | Gostick, *Phys. Rev. E* **96**, 023307 (2017) — watershed network extraction | ✓ repo |
+| R5 | Rayleigh / Plateau — capillary instability of a liquid cylinder | ⚠ classical, cite via R6 |
+| R6 | **Nichols & Mullins, "Morphological changes of a surface of revolution due to capillarity-induced surface diffusion", *J. Appl. Phys.* 36, 1826 (1965)** — solid-cylinder spheroidization; adapts Rayleigh to solids without a second phase | **✓ verified** |
+| R7 | **Simwonis, Tietz & Stöver, "Nickel coarsening in annealed Ni/8YSZ anode substrates for solid oxide fuel cells", *Solid State Ionics* 132, 241–251 (2000)** — 33 % conductivity loss after 4000 h; surface diffusion dominant | **✓ verified** |
+| R8 | **Sarantaridis & Atkinson, "Redox cycling of Ni-based solid oxide fuel cell anodes: a review", *Fuel Cells* 7, 246–258 (2007)** — reports ≈1 % linear expansion on first complete oxidation | **✓ verified** |
 | R9 | Herring — scaling laws in sintering, *J. Appl. Phys.* **21**, 301 (1950) | ⚠ |
-| R10 | Faes / Grew et al. — coarsening simulated on FIB-SEM reconstructions | ✂ |
-| R11 | NiO/Ni molar volumes ≈ 11.2 / 6.59 cm³ mol⁻¹ | ⚠ |
+| R10 | **Phase-field Ni coarsening on ptychographic nano-tomography, *Acta Materialia* (2023)** — see §7.1 | **✓ exists; engage** |
+| R11 | NiO/Ni molar volumes ≈ 11.2 / 6.59 cm³ mol⁻¹ | ⚠ (R8's ≈1 % linear expansion is the usable anchor) |
 | R12 | Bond-percolation thresholds: SC 0.2488, BCC 0.1803, FCC 0.120 | ⚠ |
 
-**Submission blocker.** R5–R12 must be verified or cut. **The measurement
+**Remaining to verify: R9, R11, R12 only.** R6–R8 and R10 are now verified with page numbers. **The measurement
 underlying §3.1 does not depend on R5 or R6**: the bracketing of Figure 1 stands
 on its own, and only the attribution to Rayleigh-type break-up requires those
 citations. If they cannot be verified, §3.1 is reported as an area-barrier
