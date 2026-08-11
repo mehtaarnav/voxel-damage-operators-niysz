@@ -89,8 +89,8 @@ through microstructural change. Nickel coarsens and can lose the percolating
 network that carries electronic current \cite{simwonis2000}; the ceramic
 scaffold fractures under redox cycling \cite{sarantaridis2007}; and the
 triple-phase boundary (TPB), the one-dimensional locus where nickel, zirconia
-and pore meet and where the electrochemical reaction proceeds, is consumed as
-the nickel phase reorganises \cite{monaco2019}. All three are geometric
+and pore meet and where the electrochemical reaction proceeds, is lost as the
+nickel agglomerates \cite{monaco2019}. All three are geometric
 processes acting on a
 microstructure that FIB-SEM and X-ray nano-tomography now resolve routinely,
 which makes a particular computational strategy very attractive: take a
@@ -102,8 +102,9 @@ data structure the experimentalist already has. It is also, as far as we can
 tell, less examined than the continuum alternative. Phase-field treatments of
 Ni coarsening in this system have been developed and progressively validated
 over more than a decade, from the early three-phase simulations on
-experimentally acquired anode functional layers \cite{chen2011}, through work
-directed explicitly at validating such a model \cite{trini2021}, to
+experimentally acquired anode functional layers \cite{chen2011}, through
+validation against time-dependent ex-situ tomography of one specimen imaged
+pristine and after annealing \cite{trini2021}, to
 quantitative simulations initialised on ptychographic
 nano-tomograms with measured thermophysical parameters \cite{yang2023} and
 multiphase-field models coupled to transmission-line performance estimates on
@@ -187,7 +188,7 @@ of the transport axis; $\Pspan$ is the fraction of phase voxels in such a
 cluster, and $\Preach$ the fraction reachable from one face. The
 implementation recovers the simple-cubic site-percolation threshold as
 $0.31218$ after finite-size extrapolation, against a reference value of
-$0.3116077$ \cite{wang2013}.
+$0.3116077(2)$ \cite{wang2013}, a deviation of $6\times10^{-4}$.
 
 \subsection{Network extraction}
 
@@ -832,16 +833,25 @@ segmented label field, the compatibility check of Eq.~\eqref{eq:dA} should be
 run before any validity gate is adopted.
 
 Discrete lattice methods are not thereby disqualified for this material
-either. A kinetic Monte Carlo model of NiO--YSZ sintering has been calibrated
-and validated against measured microstructure \cite{zhou2023}, on the same
-lattice discretisation that carries our argument. The distinction that matters
-is not continuum against discrete but the acceptance rule: any scheme that
-accepts an energy-raising move with finite probability can cross the barrier
-of Eq.~\eqref{eq:dA}, and any scheme that refuses one cannot. A monotone
-area-reduction gate is a refusal, imposed as a validity criterion rather than
-chosen as a dynamics. That is why the impossibility is narrow, and it is also
-why it is easy to walk into: the gate looks like rigour and functions like a
-constraint on the physics.
+either, and the clearest evidence is a model that makes the same move we do. A
+Potts kinetic Monte Carlo treatment of NiO--YSZ sintering, calibrated and
+validated against FIB-SEM microstructure \cite{zhou2023}, represents surface
+diffusion as the exchange of a pore site with a neighbouring solid site: a
+single-voxel swap on a voxel grid, which is our move class on our
+discretisation. It reaches the coarsening behaviour our operator could not.
+The difference is the acceptance rule. That model accepts a swap that raises
+the system energy with probability $\exp(-\Delta E / k_{\mathrm{B}}T)$ at a
+simulation temperature, so the barrier of Eq.~\eqref{eq:dA} is crossed rather
+than avoided.
+
+The distinction that matters is therefore not continuum against discrete, and
+not even swap against non-swap. It is whether energy-raising moves are
+permitted at all. A monotone area-reduction gate forbids them, and it forbids
+them as a validity criterion rather than as a choice of dynamics. That is why
+the impossibility is narrow, and it is also why it is easy to walk into: the
+gate looks like rigour and functions like a constraint on the physics. Had we
+imposed the same gate on the model of \cite{zhou2023}, it would have failed
+too.
 
 Two of our six modes have partial precedent and we do not claim them as new.
 The systematic error in TPB length computed from voxelised data is documented,
@@ -877,7 +887,11 @@ anodes, three regions of interest per anode and three damage seeds, so class
 comparisons are correspondingly weak, although the sign reversal in
 Fig.~\ref{fig:reversal} is consistent across all nine regions. Pristine and
 degraded stacks are different specimens, so every retention magnitude carries
-specimen variation and no paired quantity is available. The two $\Rni$
+specimen variation and no paired quantity is available. That is a property of
+this dataset rather than of the problem: ex-situ tomography of a single
+specimen imaged before and after annealing has been done on this material
+\cite{trini2021}, and it is what a repeat of this work should be built on.
+The two $\Rni$
 thresholds are not independent, because the spanning cluster vanishes
 discontinuously and $\Rni$ crosses 0.50 and 0.10 within one round in most
 regions, which is itself a finding about how percolation fails in these
