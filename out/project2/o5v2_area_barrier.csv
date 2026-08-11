@@ -1,0 +1,14 @@
+operator,stencil,n_rounds,volume_error,S_spec,neck_voxels,acceptance_rate,source_report
+curvature_ranked,6,0,0.0,0.45052,63,,o5v2_report.md
+curvature_ranked,6,1,0.0,0.45195,63,,o5v2_report.md
+curvature_ranked,6,3,0.0,0.45219,63,,o5v2_report.md
+curvature_ranked,6,5,0.0,0.45362,63,,o5v2_report.md
+curvature_ranked,26,0,0.0,0.45052,63,,o5v2_report.md
+curvature_ranked,26,1,0.0,0.45195,57,,o5v2_report.md
+curvature_ranked,26,3,0.0,0.44431,15,,o5v2_report.md
+curvature_ranked,26,5,0.0,0.44216,0,,o5v2_report.md
+greedy_area,26,0,0.0,0.45052,63,0.0,o5v2_optionB_report.md
+greedy_area,26,1,0.0,0.45052,63,0.0,o5v2_optionB_report.md
+greedy_area,26,3,0.0,0.45052,63,0.0,o5v2_optionB_report.md
+greedy_area,26,5,0.0,0.45052,63,0.0,o5v2_optionB_report.md
+greedy_area,26,8,0.0,0.45052,63,0.0,o5v2_optionB_report.md
