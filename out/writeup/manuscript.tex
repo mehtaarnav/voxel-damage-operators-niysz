@@ -67,7 +67,9 @@ Five further failure modes are measured. Retaining the largest connected
 component drives the spanning fraction to unity identically, so the operator
 rewrites the denominator of the metric used to judge it. Voxel-scale erosion
 multiplies triple-phase boundary density seven- to fifteen-fold before
-destroying it. Qualification gates demanding perfect pristine connectivity are
+destroying it, and neither budget an operator is usually given prevents this: a
+swap conserving volume exactly and reducing surface area monotonically still
+inflates TPB three- to fivefold on real electrodes. Qualification gates demanding perfect pristine connectivity are
 unrepresentative of real electrodes, which carry \SIrange{1.2}{11.2}{\percent}
 disconnected nickel. A jittered regular lattice has a minimum cut of exactly
 one full cross-section with zero seed-to-seed variance, whereas real networks
@@ -251,6 +253,29 @@ severing every throat in the lower quartile of the size distribution, and
 progressive fracture of sintered YSZ contacts. A cumulative-strain YSZ
 fracture operator was run on real tomograms. Definitions, frozen parameters
 and unit tests are in the repository.
+
+The area-decreasing swap requires two specifications that turn out to change
+its behaviour, and both are recorded here because neither is a free choice
+after the fact. First, application is \emph{sequential}: one move, neighbour
+field recomputed, repeat. Equation~\eqref{eq:dA} is exact for a single swap
+against a current field, so a batch ranked once against a stale field has no
+guarantee, and in practice raises the area it is meant to lower. Sequential
+application on a 67-megavoxel region is only tractable with
+incremental updates, since a swap changes the neighbour count of just the
+twelve voxels adjacent to its two endpoints; candidates are held in seven
+buckets indexed by that count. Second, ties are broken \emph{uniformly at
+random} among moves of identical $\Delta A$, from a seeded generator. This is
+part of the rule, not an implementation detail: area-neutral moves dominate,
+so the achieved area reduction depends on which of many equal-cost moves is
+taken, and a deterministic order reached $\Delta \Sspec = -0.00024$ on the test
+body where a randomised one reached $-0.00788$.
+
+Counting convention. The neighbour count $\nb$ in Eq.~\eqref{eq:dA} excludes
+the voxel itself. This is worth stating because the standard 6-connectivity
+structuring element in common image-processing libraries includes the centre,
+and convolving with it returns $\nb+1$ on a nickel site against $\nb$ on a pore
+site. Any predicate comparing the two populations is then biased by one, which
+silently forbids every area-neutral move.
 
 \subsection{Outcome metric}
 \label{sec:metric}
@@ -491,7 +516,7 @@ values. On the synthetic platform the pathology was invisible for a precise
 reason: the qualification gate had forced pristine $\Pspan$ to unity, leaving
 the pruning step nothing to remove.
 
-\subsection{Voxel-scale erosion manufactures TPB before destroying it}
+\subsection{Voxel-scale moves manufacture TPB, whatever the operator's budget}
 
 \begin{figure}[tb]
   \centering
@@ -509,12 +534,28 @@ The fourth failure mode is in the same runs. TPB density is multiplied by
 percent of pristine by the eighth (Fig.~\ref{fig:tpb}). The mechanism is
 discretisation: removing single voxels
 from a surface roughens it at the voxel scale, and each newly exposed
-nickel/pore facet that happens to touch zirconia adds triple line. An earlier
-volume-conserving redistribution operator, run on synthetic structures, showed
-the same signature more mildly: at exactly conserved volume it raised nickel
-surface area by \SIrange{1.3}{6.0}{\percent} and roughly doubled TPB, with
-per-class ratios of 2.02, 2.10 and 2.26. Roughening is not particular to
-removal.
+nickel/pore facet that happens to touch zirconia adds triple line.
+
+Removal is not the cause, and neither is a loose volume budget. A
+volume-conserving redistribution operator run on synthetic structures showed
+the same signature more mildly, raising nickel surface area by
+\SIrange{1.3}{6.0}{\percent} at exactly conserved volume and roughly doubling
+TPB, with per-class ratios of 2.02, 2.10 and 2.26. The sharper test is a
+single-voxel swap that conserves volume exactly \emph{and} decreases specific
+surface area monotonically, run sequentially on the three real regions of
+interest. It multiplies TPB density by 5.0, 4.9 and 3.7 for the fine, medium
+and coarse anodes while satisfying both budgets throughout
+(\texttt{o7\_gate\_a1v2\_real.py}). Neither conserving mass nor reducing area
+prevents the artifact.
+
+The reason is that the two quantities are not sensitive to the same thing.
+Specific surface area is a facet count over the nickel/pore interface; TPB is a
+one-dimensional junction count where three phases meet. Under the swap rule,
+about \SI{80}{\percent} of accepted moves carry $\Delta A = 0$ exactly---on the
+fine anode, $208\,199$ of $258\,870$---and are therefore unpriced by an area
+criterion. Those moves are free to scatter nickel across the three-phase
+junction, and that is what inflates the junction count. An area budget does not
+constrain the degree of freedom that governs TPB.
 
 That voxelised TPB estimates carry a resolution-dependent systematic bias is
 established \cite{jorgensen2014,shimura2016}. What is different here is that
@@ -804,8 +845,9 @@ though that does not rescue the run.
       built fully connected \\
     3 & pruning fixes $\Pspan$ at unity & $\Pspan$ jumps to 1.0000 at the
       first damage round & pristine $\Pspan$ was already 1.0000 by gate \\
-    4 & erosion manufactures TPB & TPB rises $7$--$15\times$ before
-      collapsing & platform TPB was already $\sim8\times$ inflated \\
+    4 & voxel moves manufacture TPB & $7$--$15\times$ under erosion;
+      $3.7$--$5.0\times$ under a volume- and area-budgeted swap & platform TPB
+      was already $\sim8\times$ inflated \\
     5 & curvature rank $\neq$ area change & $\Sspec$ rises at $n=1$ under
       both stencils & no explicit area budget was ever imposed \\
     6 & area monotonicity excludes break-up & $80\%$ of accepted moves are
@@ -988,8 +1030,9 @@ Eq.~\eqref{eq:dA}.
   cannot both be honoured by a single-swap operator.
 \item Five further failure modes were measured, each invisible on synthetic
   test structures: largest-component pruning makes the spanning fraction
-  identically unity; voxel-scale erosion multiplies TPB density by 7 to 15
-  before destroying it; qualification gates demanding perfect pristine
+  identically unity; voxel-scale moves multiply TPB density by 7 to 15 under
+  erosion and by 3.7 to 5.0 under a swap that conserves volume and reduces
+  area, so neither budget protects the estimate; qualification gates demanding perfect pristine
   connectivity are unrepresentative of electrodes carrying
   \SIrange{1.2}{11.2}{\percent} disconnected nickel; a jittered regular
   lattice cuts at exactly one full cross-section with zero variance, whereas
