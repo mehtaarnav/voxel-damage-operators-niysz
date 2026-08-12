@@ -55,6 +55,7 @@ class SeqGreedy:
         self.proposed = 0
         self.accepted = 0
         self.neutral = 0
+        self.dA_log = None   # set to [] to record dA of every accepted move
         # strides for flat <-> 3d without unravel_index in the hot loop
         self.sy, self.sz = self.nx, self.nx * self.ny
         self._build_buckets()
@@ -208,6 +209,8 @@ class SeqGreedy:
         for nbr in self._neighbours(b):
             self.nb.flat[nbr] += 1
         self.accepted += 1
+        if self.dA_log is not None:
+            self.dA_log.append(dA)
         if dA == 0:
             self.neutral += 1
         # refresh membership of everything whose state or nN changed
