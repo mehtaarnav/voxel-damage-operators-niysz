@@ -1034,11 +1034,33 @@ and retraction of nickel into compact particles would break long-range
 connectivity while comparatively preserving the nickel/zirconia contact
 perimeter where TPB lives. We record it as an untested possibility rather than
 a surviving candidate: nothing here eliminates its competitors, and no run in
-this work either supports or excludes it. What we can say is narrower and
-firmer. No operator of this class thinned a neck at any intensity, seed, move
-budget or acceptance rule tried, including a strictly area-lowering rule and a
-finite-temperature one, so the anticorrelation stands as an open puzzle that
-this class of method is not equipped to pose, let alone answer.
+this work either supports or excludes it.
+
+Two claims must be separated here, because only one of them fails. That a
+greedy operator is frozen, and therefore cannot reach the mechanism, is
+withdrawn: corrected, it accepts almost every move. The impossibility above is
+untouched, because it turns on which moves are \emph{permitted}, not on how
+many are taken. No single-voxel-swap operator respecting monotone area
+reduction thinned a neck at any intensity, seed, move budget or acceptance rule
+tried, strictly area-lowering or finite-temperature. The one variant that did
+thin it---curvature ranking under a 26-connectivity stencil, which reached zero
+neck volume by $n=5$---violated the area criterion at its first step, at
+0.45195 against a pristine 0.45052. Thinning and the criterion were never
+observed together.
+
+Two qualifications keep that honest. Lifting the restriction is necessary but
+not sufficient: the finite-temperature runs permit area-increasing moves and
+still produce surface roughening rather than break-up. And the impossibility is
+analytic only for a strictly decreasing criterion. Under the non-strict form
+the $\Delta A = 0$ plateau is admissible and large, so a monotone rule is free
+to wander it; that such wandering does not reach break-up is established here
+empirically, over some $2.6\times10^{5}$ accepted moves, rather than proved.
+
+The practical consequence stands. If the anticorrelation is to be explained by
+Rayleigh-type break-up, testing that explanation requires a formulation not
+restricted to monotone area reduction. That is a necessary condition on the
+method, not a recipe for the mechanism, and the anticorrelation itself remains
+an open puzzle this class of operator cannot pose.
 
 %======================================================================
 \section{Conclusions}

@@ -230,7 +230,9 @@ sanity check (`R_Ni(0)` must equal pristine `P_span`) is satisfied only as
   structure**, because four of its five conditions are vacuous and the fifth is
   marginal. A gate with one informative, seed-sensitive condition is not a basis
   for closing a route.
-- The neck never thins at any budget or seed. No Rayleigh break-up is
+- The neck never thins under any AREA-MONOTONE rule, at any budget or seed.
+  (The curvature-ranked operator does thin it, 63 -> 0 at 26-connectivity, but
+  violates the area criterion at n=1.) No Rayleigh break-up is
   demonstrated by any variant.
 
 ## Gate A1v2 on REAL ROIs — the run the pre-registration actually specifies
@@ -355,8 +357,12 @@ policy is frozen:
    `dE = J_NP*[2*(nN(a)-nN(b)) + (1+cos_t)*(nY(a)-nY(b))]` was derived and
    verified independently (`o7_derivation_check.py`).
 
-7. **No Rayleigh break-up is demonstrated by any variant, seed, or budget.** The
-   neck never thins. The mechanism question the milestone set out to answer
+7. **No area-monotone variant demonstrates Rayleigh break-up**, at any seed or
+   budget. The neck never thins under dA <= 0, dA < 0, or finite temperature.
+   The qualifier matters: curvature ranking at 26-connectivity DOES thin the
+   neck 63 -> 0, but raises S_spec to 0.45195 against pristine 0.45052 at its
+   first step, so thinning and the area criterion are never observed together.
+   The mechanism question the milestone set out to answer
    remains open.
 
 ### Consequent edits required outside this report
