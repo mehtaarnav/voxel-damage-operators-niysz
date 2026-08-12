@@ -36,7 +36,11 @@ def _nb_field(ni):
 
 
 class SeqGreedy:
-    def __init__(self, ni, ysz, seed=0):
+    def __init__(self, ni, ysz, seed=0, strict=False):
+        # strict=True accepts only dA < 0, forbidding the area-NEUTRAL moves
+        # that dominate under dA <= 0. Used to test whether the neutral
+        # plateau is the sole driver of TPB manufacture.
+        self.strict = bool(strict)
         self.ni = ni.copy()
         self.ysz = ysz
         self.shape = ni.shape
@@ -170,7 +174,7 @@ class SeqGreedy:
             return False
         self.proposed += 1
         dA = 2 * (va - vb)
-        if dA > 0:
+        if dA > 0 or (self.strict and dA == 0):
             return False              # greedy: extremal pair fails => none pass
         # apply
         self.ni.flat[a] = False
