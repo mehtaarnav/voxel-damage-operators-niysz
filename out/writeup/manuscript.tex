@@ -557,6 +557,27 @@ criterion. Those moves are free to scatter nickel across the three-phase
 junction, and that is what inflates the junction count. An area budget does not
 constrain the degree of freedom that governs TPB.
 
+Forbidding those moves reduces the artifact without removing it, and the
+residue is the more useful number. Tightening the rule to strict inequality,
+$\Delta A < 0$, so that every accepted move must lower the area, leaves TPB
+ratios of 1.53, 1.33 and 1.34 against 5.0, 4.9 and 3.7 under $\Delta A \leq 0$
+(\texttt{o7\_strict\_inequality.py}). Most of the inflation is indeed the
+neutral plateau; a third to a half of a doubling is not. Nor is a matched-budget
+control needed to reach that conclusion. The greedy rule selects the smallest
+$\nb(a)$ against the largest $\nb(b)$, so the extremal pair attains the minimum
+$\Delta A$ available; if any strictly negative move exists, that pair is
+strictly negative. Neutral moves are taken only once negative ones are
+exhausted, so the first $M$ moves under $\Delta A \leq 0$ are exactly the $M$
+moves the strict rule makes, and the two operators agree until the strict one
+halts.
+
+The consequence is that the criterion cannot be repaired by tightening it. A
+strictly area-lowering operator still manufactures triple line, still raises
+$\Rni$, and still never thins a neck. The problem is not that the area budget
+admits a null space; it is that surface area is the wrong invariant to validate
+a coarsening rule against, because a rule can satisfy it in full while moving
+the microstructure away from the physics it is meant to represent.
+
 That voxelised TPB estimates carry a resolution-dependent systematic bias is
 established \cite{jorgensen2014,shimura2016}. What is different here is that
 the bias is not a fixed offset but a large, non-monotone excursion driven by
