@@ -532,8 +532,8 @@ the pruning step nothing to remove.
 \end{figure}
 
 The fourth failure mode is in the same runs. TPB density is multiplied by
-14.8, 12.3 and 7.4 at the first damage round before it collapses to a few
-percent of pristine by the eighth (Fig.~\ref{fig:tpb}). The mechanism is
+14.8, 12.3 and 7.4 at the first damage round before it collapses to
+\SIrange{4.8}{10.2}{\percent} of pristine by the eighth (Fig.~\ref{fig:tpb}). The mechanism is
 discretisation: removing single voxels
 from a surface roughens it at the voxel scale, and each newly exposed
 nickel/pore facet that happens to touch zirconia adds triple line.
@@ -541,7 +541,7 @@ nickel/pore facet that happens to touch zirconia adds triple line.
 Removal is not the cause, and neither is a loose volume budget. A
 volume-conserving redistribution operator run on synthetic structures showed
 the same signature more mildly, raising nickel surface area by
-\SIrange{1.3}{6.0}{\percent} at exactly conserved volume and roughly doubling
+\SIrange{1.4}{5.3}{\percent} at exactly conserved volume and roughly doubling
 TPB, with per-class ratios of 2.02, 2.10 and 2.26. The sharper test is a
 single-voxel swap that conserves volume exactly \emph{and} decreases specific
 surface area monotonically, run sequentially on the three real regions of
@@ -1032,9 +1032,13 @@ synthetic runs destroy \SI{99.5}{\percent} of TPB by the time nickel
 percolation is lost, some 164 times more than the real anode does. Dewetting
 and retraction of nickel into compact particles would break long-range
 connectivity while comparatively preserving the nickel/zirconia contact
-perimeter where TPB lives. That remains the most plausible candidate, and
-testing it needs a formulation that can cross the barrier of
-Eq.~\eqref{eq:dA}.
+perimeter where TPB lives. We record it as an untested possibility rather than
+a surviving candidate: nothing here eliminates its competitors, and no run in
+this work either supports or excludes it. What we can say is narrower and
+firmer. No operator of this class thinned a neck at any intensity, seed, move
+budget or acceptance rule tried, including a strictly area-lowering rule and a
+finite-temperature one, so the anticorrelation stands as an open puzzle that
+this class of method is not equipped to pose, let alone answer.
 
 %======================================================================
 \section{Conclusions}
