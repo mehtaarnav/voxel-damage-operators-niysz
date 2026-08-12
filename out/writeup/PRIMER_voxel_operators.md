@@ -545,13 +545,39 @@ invisible to the gate. The operator is free to make as many as it likes, in any
 configuration, and the validity check will never object. This is a *null space*
 of the criterion.
 
-**(5) The null space scatters nickel across the junction.** Nothing steers those
-moves. They redistribute nickel voxels essentially at random along the surface,
-and every newly created Ni/pore facet that happens to sit next to YSZ adds triple
-line. The junction count inflates.
+**(5) The moves the gate *does* favour land on the nickel–zirconia contact.**
+This is the part worth measuring rather than assuming, and the measurement is
+sharper than the guess.
 
-That is the mechanism. **The gate prices surface area; TPB lives in the
-directions the gate does not price.**
+The rule removes nickel from sites with few nickel neighbours. Where in a real
+electrode is nickel thinnest against its neighbours? On the contact patch where
+it meets zirconia — a nickel voxel there is backed by ceramic, not by more
+nickel, so its $n_N$ is low and the rule targets it. Measured on the fine anode:
+
+> **92.8 % of removed voxels are adjacent to YSZ.** The operator strips nickel
+> off the ceramic.
+
+Added material, by contrast, lands almost anywhere: only 3.2 % of it is next to
+YSZ, and it arrives in fragments — 34 753 separate clusters, median size **2
+voxels**, 41 % of them single isolated voxels.
+
+To confirm which of those two effects drives the TPB rise, re-apply them
+separately to the pristine structure:
+
+| moves re-applied | TPB ratio |
+|---|---|
+| all of them | 5.03× |
+| **only those touching the Ni–YSZ contact** | **5.07×** |
+| only those away from the contact | **1.04×** |
+
+The contact-adjacent moves reproduce the entire artifact on their own. Every
+other move — 97 % of the added material — shifts TPB by four percent.
+
+So the mechanism is specific, not diffuse: **the area criterion rewards exactly
+the moves that pit the nickel–zirconia contact patch**, and pitting that patch
+multiplies the triple line, because triple line is precisely what lives on its
+perimeter. The gate prices the nickel/pore interface. The damage happens on the
+nickel/zirconia interface, which the gate never looks at.
 
 ### 5.2 The obvious fix, and why it is not enough
 
