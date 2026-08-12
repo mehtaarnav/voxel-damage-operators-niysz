@@ -36,11 +36,16 @@ def _nb_field(ni):
 
 
 class SeqGreedy:
-    def __init__(self, ni, ysz, seed=0, strict=False):
+    def __init__(self, ni, ysz, seed=0, strict=False, tiebreak="random"):
         # strict=True accepts only dA < 0, forbidding the area-NEUTRAL moves
         # that dominate under dA <= 0. Used to test whether the neutral
         # plateau is the sole driver of TPB manufacture.
         self.strict = bool(strict)
+        # tiebreak: "random" is the FROZEN policy. "lifo" is retained only so
+        # the reported sensitivity of the result to this choice stays
+        # reproducible; it is not a valid setting for a production run.
+        assert tiebreak in ("random", "lifo")
+        self.tiebreak = tiebreak
         self.ni = ni.copy()
         self.ysz = ysz
         self.shape = ni.shape
@@ -102,35 +107,45 @@ class SeqGreedy:
     #
     # This is load-bearing, not cosmetic. Area-neutral (dA = 0) moves dominate
     # on real ROIs, so the achieved area reduction is set by which of the many
-    # equal-dA moves is taken. A LIFO policy reached dS = -0.00024 on the
-    # recovered O5v2 structure where a randomised one reached -0.02817. The
-    # policy is therefore part of the operator specification and is frozen here.
+    # equal-dA moves is taken. Measured on the recovered O5v2 structure at a
+    # matched budget of 1220 moves, LIFO and random tie-breaking give
+    # materially different area reductions; see
+    # scripts/project2/o7_tiebreak_sensitivity.py, which reproduces both. The
+    # policy is therefore part of the operator specification and is frozen
+    # here as "random".
     def _sample(self, bucket, v, validator):
-        """Uniform random valid entry of `bucket`, purging stale ones."""
+        """Valid entry of `bucket` with its index, purging stale ones.
+
+        Returns (flat_index, position_in_bucket) so the caller can remove the
+        entry in O(1) if it has to reject it for a reason other than dA --
+        necessary because under a deterministic policy re-sampling would
+        otherwise return the same candidate forever.
+        """
         while bucket:
-            i = int(self.rng.integers(len(bucket)))
+            i = (len(bucket) - 1 if self.tiebreak == "lifo"
+                 else int(self.rng.integers(len(bucket))))
             f = bucket[i]
             if validator(f) and int(self.nb.flat[f]) == v:
-                return f
+                return f, i
             bucket[i] = bucket[-1]        # O(1) swap-remove
             bucket.pop()
-        return None
+        return None, None
 
     def _pop_min_surf(self):
-        """Lowest-nN valid surface site, ties broken uniformly at random."""
+        """Lowest-nN valid surface site; ties broken by the frozen policy."""
         for v in range(7):
-            f = self._sample(self.bs[v], v, self._is_surf)
+            f, i = self._sample(self.bs[v], v, self._is_surf)
             if f is not None:
-                return f, v
-        return None, None
+                return f, v, i
+        return None, None, None
 
     def _pop_max_front(self):
-        """Highest-nN valid front site, ties broken uniformly at random."""
+        """Highest-nN valid front site; ties broken by the frozen policy."""
         for v in range(6, -1, -1):
-            f = self._sample(self.bf[v], v, self._is_front)
+            f, i = self._sample(self.bf[v], v, self._is_front)
             if f is not None:
-                return f, v
-        return None, None
+                return f, v, i
+        return None, None, None
 
     def _neighbours(self, flat):
         z, rem = divmod(flat, self.sz)
@@ -152,7 +167,7 @@ class SeqGreedy:
 
     # ------------------------------------------------------------------- move
     def step(self):
-        a, va = self._pop_min_surf()
+        a, va, _ = self._pop_min_surf()
         if a is None:
             return False
         # non-adjacency: the dA algebra assumes a and b share no bond.
@@ -163,13 +178,22 @@ class SeqGreedy:
         # attempts so the loop cannot spin.
         nbrs = self._neighbours(a)
         b = vb = None
-        for _ in range(8):
-            cand, vcand = self._pop_max_front()
+        held = []                      # adjacent candidates, restored below
+        while True:
+            cand, vcand, idx = self._pop_max_front()
             if cand is None:
-                return False
+                break
             if cand not in nbrs:
                 b, vb = cand, vcand
                 break
+            bucket = self.bf[vcand]    # remove so the next draw differs
+            bucket[idx] = bucket[-1]
+            bucket.pop()
+            held.append((cand, vcand))
+            if len(held) > 8:          # bounded: a has at most 6 neighbours
+                break
+        for f, v in held:
+            self.bf[v].append(f)
         if b is None:
             return False
         self.proposed += 1

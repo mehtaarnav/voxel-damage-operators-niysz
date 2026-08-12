@@ -267,8 +267,10 @@ buckets indexed by that count. Second, ties are broken \emph{uniformly at
 random} among moves of identical $\Delta A$, from a seeded generator. This is
 part of the rule, not an implementation detail: area-neutral moves dominate,
 so the achieved area reduction depends on which of many equal-cost moves is
-taken, and a deterministic order reached $\Delta \Sspec = -0.00024$ on the test
-body where a randomised one reached $-0.00788$.
+taken. At a matched budget of 1220 moves on the test body, a
+last-in-first-out order reaches $\Delta \Sspec = -0.00024$ where the frozen
+randomised policy reaches $-0.00955$, a factor of 40
+(	exttt{o7\_tiebreak\_sensitivity.py}).
 
 Counting convention. The neighbour count $\nb$ in Eq.~\eqref{eq:dA} excludes
 the voxel itself. This is worth stating because the standard 6-connectivity
@@ -552,7 +554,7 @@ The reason is that the two quantities are not sensitive to the same thing.
 Specific surface area is a facet count over the nickel/pore interface; TPB is a
 one-dimensional junction count where three phases meet. Under the swap rule,
 about \SI{80}{\percent} of accepted moves carry $\Delta A = 0$ exactly---on the
-fine anode, $208\,199$ of $258\,870$---and are therefore unpriced by an area
+fine anode, $208\,180$ of $258\,870$---and are therefore unpriced by an area
 criterion. Those moves are free to scatter nickel across the three-phase
 junction, and that is what inflates the junction count. An area budget does not
 constrain the degree of freedom that governs TPB.
@@ -742,7 +744,7 @@ $5.0$, $4.9$ and $3.7$ for the fine, medium and coarse electrodes, and the
 retained percolating fraction $R_{\mathrm{Ni}}$ rises rather than falls.
 
 The mechanism is the area-neutral plateau. Roughly $80\%$ of accepted moves
-carry $\Delta A = 0$ exactly: on the fine electrode, $208\,199$ of $258\,870$.
+carry $\Delta A = 0$ exactly: on the fine electrode, $208\,180$ of $258\,870$.
 They are free under a surface-area criterion and are therefore unconstrained,
 scattering nickel across the three-phase junction. A monotone-area gate cannot
 detect this, because the area genuinely does decrease while the microstructure
