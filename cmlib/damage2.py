@@ -30,6 +30,20 @@ from .project2 import rasterize_ysz
 
 STRUCT6 = ndi.generate_binary_structure(3, 1)
 
+# STRUCT6 has sum 7 -- generate_binary_structure INCLUDES the centre voxel.
+# That is correct for binary_erosion / binary_dilation / label, which need the
+# full connectivity structure, and it is used for those throughout this module.
+#
+# It is NOT correct as a convolution kernel for counting a voxel's Ni
+# 6-NEIGHBOURS: convolving with it yields (own value) + (neighbour count), i.e.
+# nN + 1 on a Ni site and nN + 0 on a pore site. Any comparison that crosses
+# those two populations is then biased by +1 on the Ni side.
+#
+# NB6 is the centre-excluded kernel for neighbour counting. See
+# out/project2/O7_O5V2B_RERUN_REPORT.md.
+NB6 = STRUCT6.copy()
+NB6[1, 1, 1] = False
+
 O1_P_ERODE, O1_EXPAND = 0.35, 1
 O2_P_SEVER, O2_PCT = 0.25, 25
 O3_P_FRACTURE = 0.25
@@ -389,6 +403,26 @@ def apply_o5v2(ni_mask, ysz_mask, n_rounds, seed,
 # Removing surface voxel a changes exposed Ni faces by 2*nb(a) - 6; adding at
 # pore site b by 6 - 2*nb(b), where nb counts Ni 6-neighbours. Hence
 #     dA = 2*(nb(a) - nb(b))       and   dA <= 0  <=>  nb(a) <= nb(b).
+#
+# CORRECTION (see out/project2/O7_O5V2B_RERUN_REPORT.md): this predicate
+# compares nb ACROSS a Ni site and a pore site, so it is sensitive to whether
+# the counting kernel includes the centre voxel. The original implementation
+# convolved with STRUCT6 (centre INCLUDED, sum 7), giving nb(a) = nN(a) + 1 and
+# nb(b) = nN(b). The implemented test was therefore nN(a) < nN(b), strictly
+# stronger than the frozen spec's nN(a) <= nN(b): every AREA-NEUTRAL move was
+# silently rejected. On the original test structure that alone produced the
+# recorded "acceptance = 0.000" (nba_min 4 > nbb_max 3 under the biased kernel;
+# 3 vs 3, i.e. admissible, under the correct one). Now uses NB6.
+#
+# Option A (apply_o5v2 above) is NOT affected: it ranks Ni sites and pore sites
+# in two separate orderings, and a constant +1 on every Ni site cannot reorder
+# either one.
+#
+# KNOWN LIMITATION, unchanged here: `rng` below is constructed and never used,
+# and candidate ordering is a stable argsort, so this operator is deterministic
+# and its `seed` argument has no effect. Randomised tie-breaking among equal-dA
+# moves is frozen and implemented in cmlib/seqgreedy.py; it matters, because
+# area-neutral moves dominate on real data.
 # Curvature RANK was a proxy for this; the identity is exact. dV = 0 by
 # construction (one voxel out, one in). gamma=1.0, lambda enforced structurally,
 # kT=0 so no dA>0 move is ever accepted -- gate (ii) cannot fail by construction
@@ -406,7 +440,7 @@ def apply_o5v2b(ni_mask, ysz_mask, n_rounds, seed,
     for _ in range(max(0, int(n_rounds))):
         if k_move <= 0:
             break
-        nb = ndi.convolve(ni.astype(np.int16), STRUCT6.astype(np.int16),
+        nb = ndi.convolve(ni.astype(np.int16), NB6.astype(np.int16),
                           mode="constant", cval=0)
         surf = ni & ~ndi.binary_erosion(ni, structure=STRUCT6)
         front = (~ni) & (~ysz_mask) & ndi.binary_dilation(ni, structure=STRUCT6)
