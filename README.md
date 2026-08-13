@@ -21,7 +21,7 @@ Our validation study shows that no standard operator class reproduces this signa
 | **5** | **Curvature-Rank vs. Area** | Stencil-based curvature proxies do not guarantee the specific surface area reduction assumed of them, rising at $n=1$ under standard stencils. |
 | **6** | **Area Monotonicity Barrier** | Requiring monotonic area reduction strictly forbids the energy-raising or neutral steps ($80\%$ of accepted moves) needed to cross topological barriers and thin necks. |
 
-For a complete pedagogical breakdown of the physics, mathematics, and operator behaviors, refer to the compiled [Standalone Primer](file:///c:/Users/ARNAV%20MEHTA/Downloads/soec/connectivity_margin/out/writeup/primer.html) (`out/writeup/primer.html`).
+For a complete pedagogical breakdown of the physics, mathematics, and operator behaviors, refer to the compiled [Standalone Primer](file:///c:/Users/ARNAV%20MEHTA/Downloads/soec/voxel-damage-operators-niysz/out/writeup/primer.html) (`out/writeup/primer.html`).
 
 ---
 
@@ -30,7 +30,7 @@ For a complete pedagogical breakdown of the physics, mathematics, and operator b
 To navigate the files in this repository, they are organized here by module and execution role:
 
 ### Core Support Library (`cmlib/`)
-Located in [cmlib/](file:///c:/Users/ARNAV%20MEHTA/Downloads/soec/connectivity_margin/cmlib/):
+Located in [cmlib/](file:///c:/Users/ARNAV%20MEHTA/Downloads/soec/voxel-damage-operators-niysz/cmlib/):
 * `damage.py` & `damage2.py`: Voxel damage operators (D4, O1, O2, O3, O5, etc.).
 * `seqgreedy.py`: Incremental sequential greedy KMC and area-decreasing swap engines.
 * `metrics.py`: Graph-theoretic metrics (algebraic connectivity, minimum-cut, conductance).
@@ -52,7 +52,7 @@ Root scripts running the original connectivity margin pipeline:
 * `phase6_verdict.py`: Final report tables builder.
 
 ### Phase 2: Operator Validation & Primer (`scripts/project2/`)
-Located in [scripts/project2/](file:///c:/Users/ARNAV%20MEHTA/Downloads/soec/connectivity_margin/scripts/project2/):
+Located in [scripts/project2/](file:///c:/Users/ARNAV%20MEHTA/Downloads/soec/voxel-damage-operators-niysz/scripts/project2/):
 * `test_operators.py`: Verification suite checking operator volume conservation and monotonicity (runnable via `pytest`).
 * `o7_gate_a1v2_real.py` & `o7_strict_inequality.py`: Evaluates area-decreasing swaps and strict-inequality controls on real tomograms.
 * `o7_tiebreak_sensitivity.py`: Demonstrates the effect of random vs. LIFO tiebreaking.

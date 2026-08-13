@@ -14,7 +14,7 @@ retuned). YSZ/pore placement, damage models, Family C, and real-dataset
 calibration remain OUT OF SCOPE until Gate P2-C's failure is reviewed.**
 
 Repository root for all paths below:
-`C:\Users\ARNAV MEHTA\Downloads\soec\connectivity_margin\`
+`C:\Users\ARNAV MEHTA\Downloads\soec\voxel-damage-operators-niysz\`
 
 ---
 

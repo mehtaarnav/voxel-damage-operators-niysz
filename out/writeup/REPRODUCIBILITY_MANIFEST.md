@@ -1,7 +1,7 @@
 # Reproducibility manifest
 
 Everything required to regenerate the results in `PATH_B_MEMO.md` from a clean
-checkout. Repository: `connectivity_margin`, branch `master`, head commit
+checkout. Repository: `voxel-damage-operators-niysz`, branch `master`, head commit
 `b21c2bf` ("null autopsy: intervention bypassed, not erased — D4 collapse is
 surface-mediated").
 
