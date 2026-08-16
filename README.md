@@ -1,31 +1,67 @@
-# Voxel Damage Operators on Ni-YSZ Tomograms: Validation and Failure Modes
+# Validation criteria that exclude their own mechanism
 
-This repository contains the source code, pipelines, and manuscript write-up for a validation study of voxel-scale damage operators applied to segmented solid oxide cell electrode reconstructions.
+[![verify](https://github.com/mehtaarnav/voxel-damage-operators-niysz/actions/workflows/ci.yml/badge.svg)](https://github.com/mehtaarnav/voxel-damage-operators-niysz/actions/workflows/ci.yml)
+[![License: MIT](https://img.shields.io/badge/License-MIT-blue.svg)](LICENSE)
+[![Python 3.12](https://img.shields.io/badge/python-3.12-blue.svg)](requirements.txt)
 
-The study is run against the Holzer/Pecho Ni-YSZ FIB-tomography dataset ([Zenodo 4056538](https://zenodo.org/records/4056538)) spanning three pristine and post-redox anode structures (fine, medium, and coarse).
+**A simulation can satisfy every validity check its authors impose and still
+move the microstructure away from the physics it represents.**
+
+This repository contains the code, pre-registrations, run reports and
+manuscript for a study of voxel-scale damage operators applied to segmented
+Ni–YSZ solid oxide cell electrodes.
+
+![The validity criterion is satisfied while the quantity of interest is destroyed](out/writeup/figs/fig8_gate_vs_tpb.png)
+
+A coarsening rule invites one obvious criterion: that it reduce specific
+surface area monotonically. Left panel: the operator does exactly that, falling
+3.6 % at exact volume conservation — while triple-phase-boundary density, the
+quantity the electrode exists for, rises **5.03×**. Right panel: why the gate
+does not object. Four in five accepted moves change the area by *exactly* zero
+and are unpriced by the criterion.
+
+Re-applying the moves in groups shows the inflation is not diffuse. The moves
+that touch the nickel–zirconia contact reproduce all of it (×5.07); every other
+move — 97 % of the added material — gives ×1.04. Tightening the criterion to
+strict inequality reduces the artifact without removing it.
+
+**Surface area is the wrong invariant to validate a coarsening rule against.**
+
+One check costs a line and disqualified three operators here: *an operator
+whose TPB retention exceeds unity is roughening, not coarsening.*
+
+## The six failure modes
+
+Four are implementation faults — individually reasonable conventions that go
+wrong in combination, and removable by choosing differently.
+
+| # | Failure mode | What exposed it |
+|---|---|---|
+| 1 | **Planar lattice cuts** | A jittered lattice cuts at exactly one full cross-section with zero seed-to-seed variance; real networks fail at 0.5–3 % of throats. |
+| 2 | **Over-connected gates** | Requiring perfect pristine connectivity hides that real electrodes carry 1.2–11.2 % disconnected nickel before service. |
+| 3 | **Pruning circularity** | Keeping only the largest connected component makes the spanning fraction identically 1.0000 — the operator rewrites the denominator of the metric judging it. |
+| 5 | **Curvature rank ≠ area change** | A curvature proxy is not the area change; specific surface area *rises* at the first step. |
+
+Two are structural — properties of the move class itself, which no
+implementation removes.
+
+| # | Failure mode | What exposed it |
+|---|---|---|
+| 4 | **Voxel moves manufacture TPB** | 7–15× under erosion, 3.7–5.0× under a swap that conserves volume *and* reduces area. Neither budget constrains the three-phase junction. |
+| 6 | **Area monotonicity excludes break-up** | Rayleigh neck break-up needs a transient area increase, which the criterion forbids. No operator respecting it thinned a neck. |
+
+Numbering follows the manuscript. A pedagogical walkthrough of the physics,
+the mathematics and the operator behaviour is in the
+[standalone primer](out/writeup/primer.html).
 
 ---
-
-## 1. Scientific Overview & The Six Failure Modes
-
-Voxel-scale damage operators are widely used to simulate microstructural degradation directly on segmented tomograms. This project systematically tests these operators against a sharp measured signature: **the finest anode retains nickel percolation worst, yet retains triple-phase boundary (TPB) best.**
-
-Our validation study shows that no standard operator class reproduces this signature due to six fundamental methodological and topological failure modes:
-
-| # | Failure Mode | Impact & Description |
-|---|---|---|
-| **1** | **Planar Lattice Cuts** | Jittered regular lattices cut at exactly one flat cross-section with zero variance; they cannot model the local, disordered throat failures of real networks. |
-| **2** | **Over-connected Gates** | Requiring perfect pristine connectivity in synthetic models conceals the fact that real electrodes carry $1.2\text{--}11.2\%$ disconnected nickel before service. |
-| **3** | **Pruning Circularity** | Restricting outcomes to the largest connected component makes the spanning fraction ($P_{\text{span}}$) identically unity at the first step, hiding degradation. |
-| **4** | **TPB Voxel Roughening** | Local voxel moves inherently pit the surface at the grid scale, inflating TPB density $3.7\text{--}15\times$ regardless of conservation budgets. |
-| **5** | **Curvature-Rank vs. Area** | Stencil-based curvature proxies do not guarantee the specific surface area reduction assumed of them, rising at $n=1$ under standard stencils. |
-| **6** | **Area Monotonicity Barrier** | Requiring monotonic area reduction forbids the *area-raising* steps that Rayleigh-type neck break-up needs. It does not forbid area-*neutral* steps, which are admissible and dominant: $pprox 80\%$ of accepted moves carry $\Delta A = 0$, cost nothing under the criterion, and redistribute nickel without thinning a neck. |
+## Repository
 
 For a complete pedagogical breakdown of the physics, mathematics, and operator behaviors, refer to the compiled [standalone primer](out/writeup/primer.html).
 
 ---
 
-## 2. Repository File Map
+### File map
 
 To navigate the files in this repository, they are organized here by module and execution role:
 
@@ -69,7 +105,7 @@ Root files for memory, thickness, and Skan/Porespy inspection:
 
 ---
 
-## 3. Running the Code
+### Running the code
 
 ### Environment Verification
 To verify your Python environment carries the required scientific stack, run:
@@ -94,7 +130,7 @@ This generates:
 
 ---
 
-## 4. Data, licensing and citation
+## Data, licensing and citation
 
 **The tomography data is not in this repository and is not redistributed by
 it.** The segmented stacks are the Holzer/Pecho Ni-YSZ FIB-tomography dataset,
@@ -108,7 +144,7 @@ the primer are the author's own text and figures.
 
 To cite the software, see `CITATION.cff`. To cite the findings, cite the paper.
 
-## 5. What this repository will and will not reproduce
+## What reproduces from a clean checkout
 
 Everything that depends only on committed code and seeds regenerates from a
 clean checkout. Anything that reads the tomograms requires the Zenodo download
