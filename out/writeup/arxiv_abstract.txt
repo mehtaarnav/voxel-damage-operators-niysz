@@ -1,32 +1,32 @@
-Applying a voxel-scale damage operator to a segmented tomogram is a standard
-way to simulate microstructural degradation in solid oxide cell electrodes. We
-asked whether any operator of this class reproduces a measured signature in
-three FIB-SEM reconstructed Ni-YSZ anodes spanning a coarseness series: the
-finest anode retains nickel percolation worst (0.680 against 0.855 and 0.947)
-yet retains triple-phase boundary best. None does, and the reasons are
-methodological.
+A simulation can satisfy every validity check its authors impose and still move
+the microstructure away from the physics it represents. We show this for
+voxel-scale damage operators on segmented tomograms, a standard way to simulate
+degradation in solid oxide cell electrodes, and say what to check instead.
 
-The most general is an impossibility. Requiring an operator to reduce specific
-surface area monotonically is the natural way to validate a coarsening rule,
-and it excludes Rayleigh-type neck break-up, the mechanism such rules exist to
-represent. On a 6-connected lattice a single-voxel swap changes exposed area by
-exactly 2[nb(a)-nb(b)], so the criterion is a statement about neighbour
-counts. A curvature-ranked operator thins a model neck to zero but violates the
-criterion at its first step; a greedy area-decreasing operator accepts
-96% of proposals and still fails, because four in five accepted
-moves are area-neutral and cost nothing. On real electrodes it lowers surface
-area as required while inflating triple-phase-boundary density three- to
-fivefold.
+A coarsening rule invites one obvious criterion: that it reduce specific
+surface area monotonically. We pre-registered exactly that. On a 6-connected
+lattice a single-voxel swap changes exposed area by exactly 2[nb(a)-nb(b)],
+so the criterion is a comparison of neighbour counts, and it leaves a large
+null space: four in five accepted moves change the area by exactly zero and are
+unpriced. On three FIB-SEM reconstructed Ni-YSZ anodes the operator satisfies
+the criterion in full, area falling monotonically at exact volume conservation,
+while triple-phase-boundary density rises three- to fivefold. The inflation is
+not diffuse: re-applying only the moves that touch the nickel-zirconia contact
+reproduces all of it, every other move giving x1.04. Strict inequality
+reduces the artifact without removing it. Surface area is the wrong invariant
+to validate a coarsening rule against.
 
-Five further failure modes are measured. Largest-component pruning drives the
-spanning fraction identically to unity, so the operator rewrites the
-denominator of the metric judging it. Voxel-scale erosion multiplies TPB
-density seven- to fifteenfold before destroying it. Qualification gates
-demanding perfect pristine connectivity are unrepresentative of electrodes
-carrying 1.2-11.2% disconnected nickel. A jittered lattice
-cuts at exactly one full cross-section with zero seed-to-seed variance, whereas
-real networks fail at 0.5-3% of throats. Curvature rank
-does not deliver the area reduction it is assumed to deliver. Each was
-invisible on synthetic structures.
+The same criterion excludes Rayleigh-type neck break-up, which needs a
+transient area increase. No operator respecting it thinned a neck; the one that
+did violated it at its first step.
 
-[1905 characters; arXiv abstract limit is 1920]
+Four further modes are measured, each invisible on synthetic structures:
+largest-component pruning makes the spanning fraction identically unity, so the
+operator rewrites the denominator of the metric judging it; gates requiring
+perfect pristine connectivity misrepresent electrodes carrying
+1.2-11.2% disconnected nickel; a jittered lattice cuts at
+one cross-section with zero variance where real networks fail at
+0.5-3% of throats. One check costs a line: an operator whose TPB
+retention exceeds unity is roughening, not coarsening.
+
+[1917 characters; arXiv abstract limit is 1920]
