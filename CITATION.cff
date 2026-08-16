@@ -10,6 +10,16 @@ authors:
     affiliation: >-
       Department of Mechanical Engineering, University of Wisconsin-Madison
 repository-code: https://github.com/mehtaarnav/voxel-damage-operators-niysz
+doi: 10.5281/zenodo.21969405
+version: 1.0.0
+date-released: 2026-08-16
+identifiers:
+  - type: doi
+    value: 10.5281/zenodo.21969405
+    description: Concept DOI, resolves to the latest version
+  - type: doi
+    value: 10.5281/zenodo.21969406
+    description: DOI of v1.0.0, the state accompanying the manuscript
 license: MIT
 abstract: >-
   Code, pre-registration documents and result tables for a study of voxel-scale

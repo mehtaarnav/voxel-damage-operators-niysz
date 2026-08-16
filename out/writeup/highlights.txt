@@ -1,0 +1,7 @@
+Highlights
+
+- A voxel damage operator can satisfy its validity gate and still destroy TPB
+- Four in five accepted moves change surface area by zero and go unpriced
+- Moves at the Ni-YSZ contact reproduce the entire fivefold TPB inflation
+- Monotone area reduction excludes the break-up such operators exist to model
+- Six failure modes measured on real tomograms, all invisible on synthetic ones

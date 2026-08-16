@@ -2,6 +2,7 @@
 
 [![verify](https://github.com/mehtaarnav/voxel-damage-operators-niysz/actions/workflows/ci.yml/badge.svg)](https://github.com/mehtaarnav/voxel-damage-operators-niysz/actions/workflows/ci.yml)
 [![License: MIT](https://img.shields.io/badge/License-MIT-blue.svg)](LICENSE)
+[![DOI](https://zenodo.org/badge/DOI/10.5281/zenodo.21969405.svg)](https://doi.org/10.5281/zenodo.21969405)
 [![Python 3.12](https://img.shields.io/badge/python-3.12-blue.svg)](requirements.txt)
 
 **A simulation can satisfy every validity check its authors impose and still
@@ -142,7 +143,11 @@ gitignored, for the same reason.
 Code in this repository is MIT licensed (see `LICENSE`). The manuscript and
 the primer are the author's own text and figures.
 
-To cite the software, see `CITATION.cff`. To cite the findings, cite the paper.
+To cite the software, see `CITATION.cff`, or the archived release directly:
+[10.5281/zenodo.21969405](https://doi.org/10.5281/zenodo.21969405) resolves to
+the latest version, and
+[10.5281/zenodo.21969406](https://doi.org/10.5281/zenodo.21969406) is v1.0.0,
+the state accompanying the manuscript. To cite the findings, cite the paper.
 
 ## What reproduces from a clean checkout
 

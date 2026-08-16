@@ -1,24 +1,24 @@
 A simulation can satisfy every validity check its authors impose and still move
 the microstructure away from the physics it represents. We show this for
 voxel-scale damage operators on segmented tomograms, a standard way to simulate
-degradation in solid oxide cell electrodes, and say what to check instead.
+degradation in solid oxide cell electrodes.
 
-A coarsening rule invites one obvious criterion: that it reduce specific
-surface area monotonically. We pre-registered exactly that. On a 6-connected
+A coarsening rule invites one obvious criterion, that it should reduce
+specific surface area monotonically. We pre-registered exactly that. On a 6-connected
 lattice a single-voxel swap changes exposed area by exactly 2[nb(a)-nb(b)],
 so the criterion is a comparison of neighbour counts, and it leaves a large
-null space: four in five accepted moves change the area by exactly zero and are
-unpriced. On three FIB-SEM reconstructed Ni-YSZ anodes the operator satisfies
+null space in which four in five accepted moves change the area by exactly
+zero. On three FIB-SEM reconstructed Ni-YSZ anodes the operator satisfies
 the criterion in full, area falling monotonically at exact volume conservation,
 while triple-phase-boundary density rises three- to fivefold. The inflation is
-not diffuse: re-applying only the moves that touch the nickel-zirconia contact
-reproduces all of it, every other move giving x1.04. Strict inequality
+localised rather than diffuse. Re-applying only the moves that touch the
+nickel-zirconia contact reproduces all of it, while every other move together
+gives x1.04. Strict inequality
 reduces the artifact without removing it. Surface area is the wrong invariant
 to validate a coarsening rule against.
 
 The same criterion excludes Rayleigh-type neck break-up, which needs a
-transient area increase. No operator respecting it thinned a neck; the one that
-did violated it at its first step.
+transient area increase. No operator respecting it thinned a neck.
 
 Four further modes are measured, each invisible on synthetic structures:
 largest-component pruning makes the spanning fraction identically unity, so the
@@ -26,7 +26,7 @@ operator rewrites the denominator of the metric judging it; gates requiring
 perfect pristine connectivity misrepresent electrodes carrying
 1.2-11.2% disconnected nickel; a jittered lattice cuts at
 one cross-section with zero variance where real networks fail at
-0.5-3% of throats. One check costs a line: an operator whose TPB
-retention exceeds unity is roughening, not coarsening.
+0.5-3% of throats. One check costs a line of code, since an operator whose TPB retention exceeds
+unity is roughening rather than coarsening.
 
-[1917 characters; arXiv abstract limit is 1920]
+[1889 characters; arXiv abstract limit is 1920]
