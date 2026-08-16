@@ -267,7 +267,7 @@ so the achieved area reduction depends on which of many equal-cost moves is
 taken. At a matched budget of 1220 moves on the test body, a
 last-in-first-out order reaches $\Delta \Sspec = -0.00024$ where the frozen
 randomised policy reaches $-0.00955$, a factor of 40
-(	exttt{o7\_tiebreak\_sensitivity.py}).
+(\texttt{o7\_tiebreak\_sensitivity.py}).
 
 Counting convention. The neighbour count $\nb$ in Eq.~\eqref{eq:dA} excludes
 the voxel itself. This is worth stating because the standard 6-connectivity
@@ -297,6 +297,18 @@ none should be computed from three points. Where correlations appear they are
 Spearman rank coefficients with leave-one-out sign checks against a threshold
 of $|\rho|\geq0.6$ fixed in advance. Region-to-region and seed-to-seed spread
 is reported as a range rather than as an interval with a coverage claim.
+
+The unit those correlations are computed over is the individual bisection, not
+the anode: three anodes $\times$ three regions $\times$ three damage seeds
+$\times$ two thresholds, i.e.\ 54 rows in
+\texttt{c1real\_results.csv}, 27 per threshold. This is worth stating
+explicitly, because a rank coefficient over three points could only take the
+values $\{0,\pm0.5,\pm1\}$ and a threshold of $0.6$ would then be equivalent to
+demanding $|\rho| = 1$. It is not that test. The corresponding caution is the
+opposite one: the 54 rows are nested within nine regions and three anodes and
+are therefore not independent, so the effective sample size is well below 54
+and the coefficients are reported as descriptive rank checks with no inferential
+claim attached.
 
 Each phase of the work was pre-registered in a version-controlled document
 committed before the run it governed, specifying the operator definition,
@@ -732,7 +744,13 @@ field, the moves interact, and the per-move guarantees do not sum.
 
 Removing that confound does not rescue the rule. A strictly sequential
 variant---one move, neighbour field recomputed, repeat---does lower the area,
-and on all three real electrodes it passes the strict-decrease gate. It fails
+and on all three real electrodes it passes the strict-decrease gate: specific
+surface area falls by \num{-0.00560}, \num{-0.00251} and \num{-0.00468} from
+pristine values of 0.15696, 0.11670 and 0.13991 for the fine, medium and coarse
+anodes, that is by \SIrange{2.2}{3.6}{\percent}, at exact volume conservation.
+The rule is permissive rather than selective on real data: essentially every
+extremal pair it examines is admissible, and it accepts until it runs out of
+its move budget rather than out of legal moves. It fails
 instead on two conditions that the synthetic test body could not probe, because
 that body has no nickel--zirconia contact and does not span its domain, so its
 triple-phase-boundary density and percolation are identically zero. On the real
@@ -946,7 +964,13 @@ imposed the same gate on the model of \cite{zhou2023}, it would have failed
 too.
 
 The comparison should be pressed past the sixth mode, because it does not stop
-there. Of the six in Table~\ref{tab:modes}, that model is exposed to none. It
+there. Of the six in Table~\ref{tab:modes}, that model is structurally exposed
+to one. Mode 4 as generalised above is a property of voxel-scale moves at a
+three-phase junction rather than of any particular acceptance rule, and a Potts
+model on a voxel grid makes voxel-scale moves; it is therefore subject to the
+same transient inflation of triple line, and a study using one should check
+that its TPB trajectory does not exceed unity before reading anything from it.
+What that model does avoid is the persistent pathologies. It
 takes real reconstructions as input, so there is no jittered lattice with a
 planar minimum cut and no qualification gate demanding perfect pristine
 connectivity. It scores on volume fraction, specific surface area, tortuosity
@@ -1072,8 +1096,11 @@ an open puzzle this class of operator cannot pose.
   without correlating into an instability. A greedy area-decreasing operator
   therefore accepts almost every move, never thins a neck, and---on real
   electrodes---inflates TPB density four- to five-fold while satisfying the
-  area criterion it is validated against. The criterion and the mechanism
-  cannot both be honoured by a single-swap operator.
+  area criterion it is validated against. The exclusion is analytic for a
+  strictly decreasing criterion, where no admissible move can go uphill; under
+  the non-strict form it rests on the plateau argument together with the
+  measurement, and is stated at that strength. The criterion and the mechanism
+  were never honoured together by any single-swap operator tested here.
 \item Five further failure modes were measured, each invisible on synthetic
   test structures: largest-component pruning makes the spanning fraction
   identically unity; voxel-scale moves multiply TPB density by 7 to 15 under
