@@ -1,0 +1,18 @@
+cff-version: 1.2.0
+title: >-
+  Validation criteria that exclude their own mechanism: six failure modes of
+  voxel damage operators applied to Ni-YSZ tomograms
+message: If you use this software or its results, please cite the paper.
+type: software
+authors:
+  - given-names: Arnav
+    family-names: Mehta
+    affiliation: >-
+      Department of Mechanical Engineering, University of Wisconsin-Madison
+repository-code: https://github.com/mehtaarnav/voxel-damage-operators-niysz
+license: MIT
+abstract: >-
+  Code, pre-registration documents and result tables for a study of voxel-scale
+  damage operators applied to segmented Ni-YSZ solid oxide cell electrode
+  tomograms. The tomography data itself is third-party and is not redistributed
+  here; see the Zenodo record cited in the README.

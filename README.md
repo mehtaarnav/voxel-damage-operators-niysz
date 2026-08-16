@@ -19,9 +19,9 @@ Our validation study shows that no standard operator class reproduces this signa
 | **3** | **Pruning Circularity** | Restricting outcomes to the largest connected component makes the spanning fraction ($P_{\text{span}}$) identically unity at the first step, hiding degradation. |
 | **4** | **TPB Voxel Roughening** | Local voxel moves inherently pit the surface at the grid scale, inflating TPB density $3.7\text{--}15\times$ regardless of conservation budgets. |
 | **5** | **Curvature-Rank vs. Area** | Stencil-based curvature proxies do not guarantee the specific surface area reduction assumed of them, rising at $n=1$ under standard stencils. |
-| **6** | **Area Monotonicity Barrier** | Requiring monotonic area reduction strictly forbids the energy-raising or neutral steps ($80\%$ of accepted moves) needed to cross topological barriers and thin necks. |
+| **6** | **Area Monotonicity Barrier** | Requiring monotonic area reduction forbids the *area-raising* steps that Rayleigh-type neck break-up needs. It does not forbid area-*neutral* steps, which are admissible and dominant: $pprox 80\%$ of accepted moves carry $\Delta A = 0$, cost nothing under the criterion, and redistribute nickel without thinning a neck. |
 
-For a complete pedagogical breakdown of the physics, mathematics, and operator behaviors, refer to the compiled [Standalone Primer](file:///c:/Users/ARNAV%20MEHTA/Downloads/soec/voxel-damage-operators-niysz/out/writeup/primer.html) (`out/writeup/primer.html`).
+For a complete pedagogical breakdown of the physics, mathematics, and operator behaviors, refer to the compiled [standalone primer](out/writeup/primer.html).
 
 ---
 
@@ -30,9 +30,9 @@ For a complete pedagogical breakdown of the physics, mathematics, and operator b
 To navigate the files in this repository, they are organized here by module and execution role:
 
 ### Core Support Library (`cmlib/`)
-Located in [cmlib/](file:///c:/Users/ARNAV%20MEHTA/Downloads/soec/voxel-damage-operators-niysz/cmlib/):
+Located in [`cmlib/`](cmlib/):
 * `damage.py` & `damage2.py`: Voxel damage operators (D4, O1, O2, O3, O5, etc.).
-* `seqgreedy.py`: Incremental sequential greedy KMC and area-decreasing swap engines.
+* `seqgreedy.py`: Sequential area-decreasing swap operator with incremental neighbour-field updates. Zero-temperature and greedy, not KMC — there is no stochastic acceptance.
 * `metrics.py`: Graph-theoretic metrics (algebraic connectivity, minimum-cut, conductance).
 * `percolation.py`: 3D site/bond percolation solvers.
 * `tpb.py`: Interfacial triple-phase boundary (TPB) estimators.
@@ -52,12 +52,12 @@ Root scripts running the original connectivity margin pipeline:
 * `phase6_verdict.py`: Final report tables builder.
 
 ### Phase 2: Operator Validation & Primer (`scripts/project2/`)
-Located in [scripts/project2/](file:///c:/Users/ARNAV%20MEHTA/Downloads/soec/voxel-damage-operators-niysz/scripts/project2/):
+Located in [`scripts/project2/`](scripts/project2/):
 * `test_operators.py`: Verification suite checking operator volume conservation and monotonicity (runnable via `pytest`).
 * `o7_gate_a1v2_real.py` & `o7_strict_inequality.py`: Evaluates area-decreasing swaps and strict-inequality controls on real tomograms.
 * `o7_tiebreak_sensitivity.py`: Demonstrates the effect of random vs. LIFO tiebreaking.
-* `o7_o5v2b_rerun.py`: Runs zero-temperature greedy KMC.
-* `build_primer_html.py`: Builds the standalone HTML primer with embedded SVG plots.
+* `o7_o5v2b_rerun.py`: Runs the zero-temperature greedy swap under both neighbour-counting stencils.
+* `build_primer_html.py`: Builds the standalone HTML primer, with the figures inlined as base64 PNG data URIs.
 * `primer_figures.py` & `primer_figures_change.py`: Generates the figures used in the primer.
 * `audit_ysz_cluster_sizes.py` & `ni_vulnerability_audit.py`: Structural vulnerability diagnostics.
 
@@ -91,3 +91,29 @@ python scripts/project2/build_primer_html.py
 This generates:
 * Markdown: `out/writeup/PRIMER_voxel_operators.md`
 * Inlined HTML: `out/writeup/primer.html` (fully self-contained, no external requests).
+
+---
+
+## 4. Data, licensing and citation
+
+**The tomography data is not in this repository and is not redistributed by
+it.** The segmented stacks are the Holzer/Pecho Ni-YSZ FIB-tomography dataset,
+published separately at [Zenodo 4056538](https://zenodo.org/records/4056538)
+under its own terms. `phase1_download.py` fetches it into `data/`, which is
+gitignored. Fetched papers and supplementary files land in `refs/`, also
+gitignored, for the same reason.
+
+Code in this repository is MIT licensed (see `LICENSE`). The manuscript and
+the primer are the author's own text and figures.
+
+To cite the software, see `CITATION.cff`. To cite the findings, cite the paper.
+
+## 5. What this repository will and will not reproduce
+
+Everything that depends only on committed code and seeds regenerates from a
+clean checkout. Anything that reads the tomograms requires the Zenodo download
+first, which is roughly 2.2 GB.
+
+Numbers quoted in the manuscript trace to committed CSVs under `out/`; the
+mapping is given in the paper's data-availability section and in
+`out/writeup/REPRODUCIBILITY_MANIFEST.md`.
