@@ -17,6 +17,12 @@ COL_W = 3.35                # single column, inches (Elsevier 5.5 pica ~ 88 mm)
 FULL_W = 6.95               # double column, inches (~176 mm)
 
 RC = {
+    # matplotlib writes Type 3 fonts into PDFs by default. arXiv warns against
+    # them -- they are bitmapped, render poorly on screen, and are not
+    # searchable. 42 selects TrueType, which embeds properly and keeps the text
+    # selectable.
+    "pdf.fonttype": 42,
+    "ps.fonttype": 42,
     "font.family": "serif",
     "font.serif": ["STIXGeneral", "DejaVu Serif"],
     "mathtext.fontset": "stix",
