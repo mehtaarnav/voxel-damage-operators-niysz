@@ -59,8 +59,22 @@ def use():
 
 
 def panel(ax, letter, dx=-0.155, dy=1.06):
-    ax.text(dx, dy, f"({letter})", transform=ax.transAxes,
-            fontsize=9, fontweight="bold", va="top", ha="left")
+    """Panel letter, placed on the title's own baseline.
+
+    The letter used to be a free-floating text at a fixed offset in axes
+    coordinates while the title was positioned by matplotlib's title padding.
+    Those are two independent placements, so whether they appeared level
+    depended on the figure's height, and across a paper with panels of
+    different heights they visibly did not.
+
+    Writing the letter into the title guarantees a shared baseline. Bold comes
+    from mathtext so the rest of the title keeps its normal weight.
+    """
+    # NB: rcParams sets titlelocation to "left", so set_title() writes the LEFT
+    # title slot. A bare get_title() reads the CENTRE slot and would return an
+    # empty string, silently discarding the panel's real title.
+    existing = ax.get_title(loc="left")
+    ax.set_title(rf"$\bf{{({letter})}}$   {existing}".rstrip(), loc="left")
 
 
 def tidy(ax, minor_x=True, minor_y=True):
