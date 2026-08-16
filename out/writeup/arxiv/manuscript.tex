@@ -1164,8 +1164,14 @@ evaluated throughout at 6-connectivity. That is the conservative convention,
 but it ignores face-diagonal contacts, and the effect is not neutral across the
 series: the finest anode has the most surface per unit volume and therefore the
 most opportunity for such contacts, so its pristine connectivity is the most
-likely to be understated. A 26-connectivity sensitivity check was not
-performed. Fourth, regions are cut with free, non-periodic boundaries, which
+likely to be understated. That reasoning is correct in direction and negligible
+in size. Recomputing the pristine spanning fraction under 26-connectivity on
+all nine regions moves the fine anode by $+0.0004$ on the class mean and the
+medium and coarse anodes by nothing at all, to four decimal places
+(\texttt{o7\_connectivity\_check.csv}). The disconnected nickel fraction is
+unchanged at \SI{1.8}{\percent}, \SI{4.3}{\percent} and \SI{8.1}{\percent}. The
+convention favours the fine anode as predicted and by an amount that changes no
+statement in this paper. Fourth, regions are cut with free, non-periodic boundaries, which
 truncate particles at the faces. That penalty also falls unevenly, bearing
 hardest on the anode whose particles are smallest relative to the region, again
 the fine one. Both conventions push in the same direction on the same sample,

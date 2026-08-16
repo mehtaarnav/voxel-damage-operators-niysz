@@ -210,8 +210,9 @@ ax[0].set_title("measurement: fine worst")
 
 for i, a in enumerate(ANODES):
     y = tr[tr.anode == a].transition.values
-    ax[1].scatter(i + rng.uniform(-.13, .13, len(y)), y, s=11,
-                  color=COLOR[a], marker=MARKER[a], alpha=0.75, zorder=3)
+    ax[1].scatter(i + rng.uniform(-.24, .24, len(y)), y, s=13,
+                  facecolor="none", edgecolor=COLOR[a], linewidth=0.8,
+                  marker=MARKER[a], zorder=3)
     ax[1].plot([i - 0.28, i + 0.28], [means[a]] * 2, color="k", lw=1.3,
                zorder=4)
 ax[1].set_ylim(7.1, 10.9)
@@ -224,14 +225,14 @@ for a in ANODES:
     ax[2].scatter(s.spec_surface, s.transition, s=22, color=COLOR[a],
                   marker=MARKER[a], label=a)
 ax[2].set_xlabel("specific Ni surface area (vox$^{-1}$)")
-ax[2].set_ylabel("erosion rounds")
+ax[2].set_ylabel("erosion rounds to $R_{\mathrm{Ni}}<0.5$")
 ax[2].set_title("no rate dependence")
 ax[2].set_xlim(0.108, 0.172)
-ax[2].set_ylim(8.9, 10.15)
+ax[2].set_ylim(7.1, 10.9)
 ax[2].text(0.04, 0.93, r"$\rho=+0.018$", transform=ax[2].transAxes,
            ha="left", va="top", fontsize=7)
-ax[2].legend(loc="lower right", ncol=3, columnspacing=0.7,
-             handletextpad=0.3, bbox_to_anchor=(1.03, -0.03))
+ax[2].legend(loc="lower center", ncol=3, columnspacing=0.7,
+             handletextpad=0.3, bbox_to_anchor=(0.5, -0.02), frameon=False)
 
 for a in ax[:2]:
     a.set_xticks(range(3))
@@ -280,31 +281,31 @@ sch.set_ylim(-0.1, 4.7)
 sch.set_aspect("equal")
 sch.axis("off")
 
-ax[1].plot(cur26.n_rounds, cur26.neck_voxels, "o-", color="#08306B",
-           label="curvature-ranked, 26-conn")
-ax[1].plot(cur6.n_rounds, cur6.neck_voxels, "s--", color="#6BAED6",
-           label="curvature-ranked, 6-conn")
-ax[1].plot(grd.n_rounds, grd.neck_voxels, "^-", color=ACCENT,
-           label=r"greedy $\Delta A\leq0$")
+ax[1].plot(cur26.n_rounds, cur26.neck_voxels / cur26.neck_voxels.iloc[0],
+           "o-", color="#08306B", label="curvature-ranked, 26-conn")
+ax[1].plot(cur6.n_rounds, cur6.neck_voxels / cur6.neck_voxels.iloc[0],
+           "s--", color="#6BAED6", label="curvature-ranked, 6-conn")
+ax[1].plot(grd.n_rounds, grd.neck_voxels / grd.neck_voxels.iloc[0],
+           "^-", color=ACCENT, label=r"greedy $\Delta A\leq0$")
 ax[1].set_xlabel("damage rounds $n$")
-ax[1].set_ylabel("neck volume (voxels)")
-ax[1].set_ylim(-3, 70)
+ax[1].set_ylabel("neck volume / pristine")
+ax[1].set_ylim(-0.05, 1.18)
 ax[1].set_title("neck thinning")
 ax[1].legend(loc="lower left", bbox_to_anchor=(-0.02, -0.03))
 
-ax[2].axhspan(S0, 0.4545, color=ACCENT, alpha=0.10, lw=0)
+ax[2].axhspan(S0, 0.4665, color=ACCENT, alpha=0.10, lw=0)
 ax[2].axhline(S0, color="k", lw=0.6, ls=(0, (1, 2)))
 ax[2].plot(cur26.n_rounds, cur26.S_spec, "o-", color="#08306B")
 ax[2].plot(cur6.n_rounds, cur6.S_spec, "s--", color="#6BAED6")
 ax[2].plot(grd.n_rounds, grd.S_spec, "^-", color=ACCENT)
 ax[2].set_xlim(-0.2, 5.4)
-ax[2].set_ylim(0.4405, 0.4545)
+ax[2].set_ylim(0.4405, 0.4665)   # must contain greedy, which rises to 0.46461
 ax[2].set_xlabel("damage rounds $n$")
 ax[2].set_ylabel("$S_{\\mathrm{spec}}$")
 ax[2].set_title("surface area")
-ax[2].text(2.7, 0.45325, "forbidden by the validity gate", fontsize=6.5,
+ax[2].text(2.6, 0.4415, "forbidden by the validity gate", fontsize=6.5,
            color=ACCENT, ha="center")
-ax[2].annotate("greedy: no move accepted", xy=(4.0, S0), xytext=(2.15, 0.4478),
+ax[2].annotate("greedy, batched", xy=(3.0, 0.46246), xytext=(3.4, 0.4570),
                fontsize=6.5, color=ACCENT,
                arrowprops=dict(arrowstyle="->", lw=0.6, color=ACCENT))
 
