@@ -31,49 +31,42 @@
 \title{Validation criteria that exclude their own mechanism: six failure
 modes of voxel damage operators applied to Ni--YSZ tomograms}
 
-% Author block: complete before submission.
+
 \author[a]{Arnav Mehta}
+\ead{amehta33@wisc.edu}
 \address[a]{Department of Mechanical Engineering, University of Wisconsin--Madison, Madison, WI, USA}
 
 \begin{abstract}
 Applying a voxel-scale damage operator to a segmented tomogram is a standard
-way to simulate microstructural degradation in solid oxide cell electrodes.
-We asked whether any operator of this class reproduces a sharp measured
-signature in three FIB-SEM reconstructed Ni--YSZ anodes spanning a coarseness
-series: the finest anode retains nickel percolation worst (0.680 against 0.855
-and 0.947) yet retains triple-phase boundary best. None does. The reasons are
-methodological, and they are the useful part of the result.
+way to simulate microstructural degradation in solid oxide cell electrodes. We
+asked whether any operator of this class reproduces a measured signature in
+three FIB-SEM reconstructed Ni--YSZ anodes spanning a coarseness series: the
+finest anode retains nickel percolation worst (0.680 against 0.855 and 0.947)
+yet retains triple-phase boundary best. None does, and the reasons are
+methodological.
 
 The most general is an impossibility. Requiring an operator to reduce specific
 surface area monotonically is the natural way to validate a coarsening rule,
 and it excludes Rayleigh-type neck break-up, the mechanism such rules exist to
-represent. On a 6-connected lattice a single-voxel swap changes exposed area
-by exactly $2[\nb(a)-\nb(b)]$, so the criterion is a statement about
-neighbour counts. A curvature-ranked operator thins a model neck from 63
-voxels to zero but violates the criterion at its first step; a greedy
-area-decreasing operator accepts almost every move---$96\%$ on the same test
-body---and still fails, because the moves it accepts are overwhelmingly
-area-\emph{neutral}. Roughly four in five carry $\Delta A = 0$, cost nothing,
-and redistribute nickel without advancing the instability. Applied in batches
-they raise the area outright, since per-move guarantees do not compose across a
-batch ranked on a stale neighbour field; applied one at a time on real
-electrodes they lower the area but inflate triple-phase-boundary density by a
-factor of four to five. Neither rule reaches Rayleigh break-up.
+represent. On a 6-connected lattice a single-voxel swap changes exposed area by
+exactly $2[\nb(a)-\nb(b)]$, so the criterion is a statement about neighbour
+counts. A curvature-ranked operator thins a model neck to zero but violates the
+criterion at its first step; a greedy area-decreasing operator accepts
+\SI{96}{\percent} of proposals and still fails, because four in five accepted
+moves are area-neutral and cost nothing. On real electrodes it lowers surface
+area as required while inflating triple-phase-boundary density three- to
+fivefold.
 
-Five further failure modes are measured. Retaining the largest connected
-component drives the spanning fraction to unity identically, so the operator
-rewrites the denominator of the metric used to judge it. Voxel-scale erosion
-multiplies triple-phase boundary density seven- to fifteen-fold before
-destroying it, and neither budget an operator is usually given prevents this: a
-swap conserving volume exactly and reducing surface area monotonically still
-inflates TPB three- to fivefold on real electrodes. Qualification gates demanding perfect pristine connectivity are
-unrepresentative of real electrodes, which carry \SIrange{1.2}{11.2}{\percent}
-disconnected nickel. A jittered regular lattice has a minimum cut of exactly
-one full cross-section with zero seed-to-seed variance, whereas real networks
-fail at \SIrange{0.5}{3}{\percent} of throats through small non-planar cuts.
-Curvature-ranked moves do not deliver the area reduction they are assumed to
-deliver. Each was invisible on synthetic test structures and each would
-silently corrupt a published study of this kind.
+Five further failure modes are measured. Largest-component pruning drives the
+spanning fraction identically to unity, so the operator rewrites the
+denominator of the metric judging it. Voxel-scale erosion multiplies TPB
+density seven- to fifteenfold before destroying it. Qualification gates
+demanding perfect pristine connectivity are unrepresentative of electrodes
+carrying \SIrange{1.2}{11.2}{\percent} disconnected nickel. A jittered lattice
+cuts at exactly one full cross-section with zero seed-to-seed variance, whereas
+real networks fail at \SIrange{0.5}{3}{\percent} of throats. Curvature rank
+does not deliver the area reduction it is assumed to deliver. Each was
+invisible on synthetic structures.
 \end{abstract}
 
 \begin{keyword}
