@@ -313,6 +313,6 @@ for a in ax[1:]:
 for i, L in enumerate("abc"):
     panel(ax[i], L, dx=-0.22 if i else 0.0, dy=1.09 if i else 1.02)
 fig.tight_layout(w_pad=1.8)
-save(fig, "fig6_area_barrier")
+save(fig, "fig7_area_barrier")
 
 print("done ->", FIG)

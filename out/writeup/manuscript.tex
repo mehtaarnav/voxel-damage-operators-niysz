@@ -640,15 +640,60 @@ in the wrong direction.
   \label{fig:reversal}
 \end{figure*}
 
+\begin{figure}[tb]
+  \centering
+  \includegraphics[width=\linewidth]{fig6_threshold_sweep.pdf}
+  \caption{The reversal does not depend on where failure is declared. Damage
+  rounds to transition against the $\Rni$ threshold, class means over three
+  regions and three damage seeds, error bars one standard deviation. Every
+  threshold is read from the same damage realisations, so the curves differ
+  only in where the cut is placed. The fine anode is the first to fail at none
+  of the nine thresholds; the measurement says it should be first at all of
+  them. The convergence below 0.50 is the discontinuous collapse of the
+  spanning cluster: $\Rni$ crosses that whole range inside one round. Data:
+  \texttt{o7\_threshold\_transitions.csv}.}
+  \label{fig:threshold}
+\end{figure}
+
+The claim to be tested is a two-level one, because that is all the measurement
+supports: the fine anode retains nickel percolation worst, and therefore should
+be the first to lose it. The simulation puts it last. That statement is the
+result; the numbers below establish it and then establish that it does not
+depend on where the failure threshold is placed.
+
 Bisecting the damage intensity at which $\Rni$ falls below 0.50 gives class
-means of 9.72 (fine), 9.06 (medium) and 9.39 (coarse) rounds; at a threshold
-of 0.10 the values are 9.72, 9.28 and 9.39. The pre-registered criterion
-required fine to be lower than both others by at least one round. Fine is
-higher at both thresholds, and every separation is also below one round, so
-the result is simultaneously wrong in sign and unresolved in magnitude
-(Fig.~\ref{fig:reversal}a,b). Against the measurement this is a complete
-reversal: real retention runs fine $<$ medium $<$ coarse from worst to best,
-while the simulation gives medium $<$ coarse $<$ fine.
+means of 9.72 (fine), 9.06 (medium) and 9.39 (coarse) rounds; at 0.10 the
+values are 9.72, 9.28 and 9.39. The pre-registered criterion required fine to
+be lower than both others by at least one round. It is higher at both
+(Fig.~\ref{fig:reversal}a,b).
+
+The three-way ordering among those means should not be read, and we do not read
+it. The separations are a few tenths of a round against region-to-region and
+seed-to-seed standard deviations of 0.33 to 1.00, so which of medium and coarse
+fails first is not resolved, exactly as medium versus coarse is unresolved in
+the measurement itself.
+
+What is resolved is the sign, and a threshold sweep shows it is not an artifact
+of the pre-registered cut. Recording the full $\Rni$ curve over 20 rounds for
+every region and seed, and reading nine thresholds from
+\numrange{0.80}{0.10} off the same damage realisations, the fine anode is the
+first to fail at \emph{none} of them (Fig.~\ref{fig:threshold}). The identity of
+the anode that does fail first changes with the threshold---coarse above 0.60,
+medium at and below 0.50---which is a further symptom of the unresolved pair,
+but fine is never among them. The sweep includes 0.68, the fine anode's own
+measured retention, which is the threshold at which a placement artifact would
+be most likely to show; it behaves like its neighbours.
+
+Two incidental confirmations fall out. The five thresholds at and below 0.50
+return an identical transition for the fine anode, 9.72 rounds in every case,
+because $\Rni$ crosses that entire range within a single damage round; those
+five were never five independent measurements. And the pre-registered pair of
+thresholds, 0.50 and 0.10, sit inside that degenerate band, so the original
+design had less resolution than its two-threshold form suggested.
+
+Against the measurement, then, the operator inverts the one comparison the data
+supports: real retention makes fine the worst, and every simulated threshold
+makes it the best or the middle.
 
 Two candidate explanations were measured directly and neither survives. A
 kinetic hypothesis predicts that the anode with the largest specific nickel
@@ -713,7 +758,7 @@ without approximation.
 
 \begin{figure*}[tb]
   \centering
-  \includegraphics[width=\textwidth]{fig6_area_barrier.pdf}
+  \includegraphics[width=\textwidth]{fig7_area_barrier.pdf}
   \caption{Two operators bracket an impossibility on a sphere--neck--sphere
   test body (neck 63 voxels, pristine $\Sspec = 0.45052$). (a) The exact area
   change of one swap on a 6-connected lattice, Eq.~\eqref{eq:dA}: moving a
@@ -806,7 +851,7 @@ particular implementation goes wrong.
 
 \begin{figure*}[tb]
   \centering
-  \includegraphics[width=\linewidth]{fig7_gate_vs_tpb.pdf}
+  \includegraphics[width=\linewidth]{fig8_gate_vs_tpb.pdf}
   \caption{The validity criterion is satisfied while the quantity of interest
   is destroyed. Fine anode, \num{67} million voxels, sequential
   area-decreasing swap, volume conserved exactly. (a) Both quantities are
@@ -821,7 +866,7 @@ particular implementation goes wrong.
 
 \begin{figure}[tb]
   \centering
-  \includegraphics[width=\linewidth]{fig8_counterfactual.pdf}
+  \includegraphics[width=\linewidth]{fig9_counterfactual.pdf}
   \caption{Where the triple-line inflation comes from, by re-applying the two
   groups of moves separately to the pristine structure. Moves that touch the
   nickel--zirconia contact reproduce the whole artifact on their own; every
@@ -910,16 +955,22 @@ though that does not rescue the run.
 
 \begin{table*}[tb]
   \centering
-  \caption{The six failure modes, in the order the work encountered them.
-  Every one arose from a combination of individually defensible choices, and
-  every one was invisible on the synthetic platform for the reason given in
-  the last column.}
+  \caption{The six failure modes, grouped by kind rather than by the order the
+  work encountered them. Modes 1, 2, 3 and 5 are implementation faults: each
+  arises from a combination of individually defensible choices and each is
+  removable by choosing differently. Modes 4 and 6 are not. They are properties
+  of what a voxel-scale move can do at a three-phase junction, and of what a
+  monotone-area criterion admits, so they persist under any implementation of
+  the move class. Numbering is retained from the text. Every mode was invisible
+  on the synthetic platform for the reason given in the last column.}
   \label{tab:modes}
   \small
   \begin{tabular}{@{}c p{0.26\textwidth} p{0.31\textwidth} p{0.31\textwidth}@{}}
     \toprule
     & failure mode & what exposed it & what concealed it \\
     \midrule
+    \multicolumn{4}{@{}l}{\emph{Implementation faults: individually reasonable
+      conventions that go wrong in combination}}\\[2pt]
     1 & lattice minimum cut is a plane & cut is exactly $6^2$, $5^2$, $4^2$
       edges, zero variance & regular lattices were never asked to fail
       locally \\
@@ -928,11 +979,13 @@ though that does not rescue the run.
       built fully connected \\
     3 & pruning fixes $\Pspan$ at unity & $\Pspan$ jumps to 1.0000 at the
       first damage round & pristine $\Pspan$ was already 1.0000 by gate \\
+    5 & curvature rank $\neq$ area change & $\Sspec$ rises at $n=1$ under
+      both stencils & no explicit area budget was ever imposed \\[4pt]
+    \multicolumn{4}{@{}l}{\emph{Structural limits: properties of the move class
+      itself, which no implementation can remove}}\\[2pt]
     4 & voxel moves manufacture TPB & $7$--$15\times$ under erosion;
       $3.7$--$5.0\times$ under a volume- and area-budgeted swap & platform TPB
       was already $\sim8\times$ inflated \\
-    5 & curvature rank $\neq$ area change & $\Sspec$ rises at $n=1$ under
-      both stencils & no explicit area budget was ever imposed \\
     6 & area monotonicity excludes break-up & $80\%$ of accepted moves are
       area-neutral; neck never thins & the operator was never asked to thin a
       neck \\

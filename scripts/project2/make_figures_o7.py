@@ -86,7 +86,7 @@ def figure7():
     panel(b, "b")
 
     fig.tight_layout(w_pad=2.0)
-    save(fig, "fig7_gate_vs_tpb")
+    save(fig, "fig8_gate_vs_tpb")
 
 
 def figure8():
@@ -110,7 +110,7 @@ def figure8():
     ax.set_title("where the inflation comes from")
     tidy(ax, minor_x=False)
     fig.tight_layout()
-    save(fig, "fig8_counterfactual")
+    save(fig, "fig9_counterfactual")
 
 
 if __name__ == "__main__":
