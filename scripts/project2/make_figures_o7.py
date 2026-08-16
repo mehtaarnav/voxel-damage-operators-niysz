@@ -92,7 +92,9 @@ def figure7():
 def figure8():
     cf = pd.read_csv(f"{P2}/o7_counterfactual.csv").set_index("case")
     order = ["all_moves", "contact_adjacent_only", "away_from_contact_only"]
-    labels = ["all\nmoves", "only at the\nNi--YSZ contact",
+    # NB: plain text, not LaTeX -- an en dash must be the character itself,
+    # since matplotlib renders "--" literally as two hyphens.
+    labels = ["all\nmoves", "only at the\nNi–YSZ contact",
               "only away from\nthe contact"]
     vals = [cf.loc[k, "tpb_ratio"] for k in order]
 
