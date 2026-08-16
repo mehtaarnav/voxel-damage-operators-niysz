@@ -422,9 +422,14 @@ def fig_run(cache):
 
 # =========================================================== FIGURE 9
 def fig_strict():
+    # Read from the committed tables rather than hard-coding: values baked into
+    # a figure script go stale silently when the underlying run is repeated.
+    import pandas as pd
+    P2 = os.path.join(ROOT, "out", "project2")
     anodes = ["fine", "medium", "coarse"]
-    nonstrict = [5.03, 4.95, 3.70]
-    strict = [1.527, 1.325, 1.340]
+    ns = pd.read_csv(f"{P2}/o7_strict_vs_nonstrict.csv").set_index("anode")
+    nonstrict = [float(ns.loc[a, "ratio_nonstrict"]) for a in anodes]
+    strict = [float(ns.loc[a, "ratio_strict"]) for a in anodes]
     x = np.arange(3)
     fig, ax = plt.subplots(figsize=(6.8, 4.0))
     ax.axhline(1.0, color=AXIS, lw=1.2)

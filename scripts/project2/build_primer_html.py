@@ -53,7 +53,7 @@ PLACEMENTS = [
      "Every accepted move on the fine anode, by its cost. The red bar is the "
      "null space of the criterion.", False),
     ("fig8_before_after.png",
-     "41 % of them single isolated voxels.",
+     "of them single isolated voxels.",
      "The busiest window in the volume. Most of the nickel that leaves is "
      "taken from against the ceramic.", True),
     ("fig11_counterfactual.png",

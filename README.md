@@ -16,12 +16,12 @@ Ni–YSZ solid oxide cell electrodes.
 A coarsening rule invites one obvious criterion: that it reduce specific
 surface area monotonically. Left panel: the operator does exactly that, falling
 3.6 % at exact volume conservation — while triple-phase-boundary density, the
-quantity the electrode exists for, rises **5.03×**. Right panel: why the gate
+quantity the electrode exists for, rises **4.99×**. Right panel: why the gate
 does not object. Four in five accepted moves change the area by *exactly* zero
 and are unpriced by the criterion.
 
 Re-applying the moves in groups shows the inflation is not diffuse. The moves
-that touch the nickel–zirconia contact reproduce all of it (×5.07); every other
+that touch the nickel–zirconia contact reproduce all of it (×5.03); every other
 move — 97 % of the added material — gives ×1.04. Tightening the criterion to
 strict inequality reduces the artifact without removing it.
 

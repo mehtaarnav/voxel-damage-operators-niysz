@@ -488,9 +488,9 @@ Volume is conserved exactly. YSZ is never touched. And:
 
 | | S_spec before → after | ΔS | TPB before → after | TPB ratio | R_Ni before → after |
 |---|---|---|---|---|---|
-| **fine** | 0.15696 → 0.15136 | **−0.00560** | 4.4774 → 22.5346 | **5.03×** | 0.9821 → **0.9825** |
-| **medium** | 0.11670 → 0.11419 | **−0.00251** | 1.8660 → 9.2329 | **4.95×** | 0.9713 → **0.9714** |
-| **coarse** | 0.13991 → 0.13524 | **−0.00468** | 1.5365 → 5.6862 | **3.70×** | 0.8878 → **0.8881** |
+| **fine** | 0.15696 → 0.15128 | **−0.00568** | 4.4774 → 22.3430 | **4.99×** | 0.9821 → **0.9825** |
+| **medium** | 0.11670 → 0.11419 | **−0.00251** | 1.8660 → 9.2347 | **4.95×** | 0.9713 → **0.9714** |
+| **coarse** | 0.13991 → 0.13521 | **−0.00470** | 1.5365 → 5.6754 | **3.69×** | 0.8878 → **0.8881** |
 
 Read the second column, then the fourth.
 
@@ -534,9 +534,9 @@ Measured on the real ROIs:
 
 | anode | accepted moves | of which ΔA = 0 | fraction |
 |---|---|---|---|
-| fine | 258 870 | 208 180 | **80.4 %** |
-| medium | 87 945 | 76 152 | **86.6 %** |
-| coarse | 175 055 | 141 572 | **80.9 %** |
+| fine | 258 870 | 207 369 | **80.1 %** |
+| medium | 87 945 | 76 121 | **86.6 %** |
+| coarse | 175 055 | 141 352 | **80.7 %** |
 
 Roughly four out of five accepted moves **cost nothing** under the criterion.
 
@@ -554,20 +554,20 @@ electrode is nickel thinnest against its neighbours? On the contact patch where
 it meets zirconia — a nickel voxel there is backed by ceramic, not by more
 nickel, so its $n_N$ is low and the rule targets it. Measured on the fine anode:
 
-> **92.8 % of removed voxels are adjacent to YSZ.** The operator strips nickel
+> **93.0 % of removed voxels are adjacent to YSZ.** The operator strips nickel
 > off the ceramic.
 
-Added material, by contrast, lands almost anywhere: only 3.2 % of it is next to
-YSZ, and it arrives in fragments — 34 753 separate clusters, median size **2
-voxels**, 41 % of them single isolated voxels.
+Added material, by contrast, lands almost anywhere: only 3.3 % of it is next to
+YSZ, and it arrives in fragments — 35 419 separate clusters, median size **2
+voxels**, 42 % of them single isolated voxels.
 
 To confirm which of those two effects drives the TPB rise, re-apply them
 separately to the pristine structure:
 
 | moves re-applied | TPB ratio |
 |---|---|
-| all of them | 5.03× |
-| **only those touching the Ni–YSZ contact** | **5.07×** |
+| all of them | 4.99× |
+| **only those touching the Ni–YSZ contact** | **5.03×** |
 | only those away from the contact | **1.04×** |
 
 The contact-adjacent moves reproduce the entire artifact on their own. Every
@@ -587,9 +587,9 @@ the area.
 
 | anode | accepted moves | ΔS | TPB ratio |
 |---|---|---|---|
-| fine | 31 368 | −0.00370 | **1.527×** |
+| fine | 31 338 | −0.00370 | **1.527×** |
 | medium | 6 700 | −0.00147 | **1.325×** |
-| coarse | 22 249 | −0.00329 | **1.340×** |
+| coarse | 22 230 | −0.00328 | **1.340×** |
 
 Inflation drops from 3.7–5.0× to **1.33–1.53×**. Large improvement. But it does
 not vanish, and it is not close to 1.0.
@@ -944,8 +944,8 @@ strictly sequential application for this reason.
 **Tie-breaking was load-bearing and unspecified.** With ~80 % of moves
 area-neutral, *which* equal-cost move you take determines how much area actually
 comes off. Last-in-first-out ordering achieves ΔS = −0.00024 where uniform random
-selection achieves −0.00955 on the same structure at the same 1220-move budget —
-a factor of 40 from a choice nobody had written down. It is now part of the
+selection achieves −0.00692 on the same structure at the same 1220-move budget —
+a factor of 29 from a choice nobody had written down. It is now part of the
 operator specification, frozen as uniform random among equal-ΔA candidates.
 
 And one found while verifying the fix for the previous one: the adjacency retry

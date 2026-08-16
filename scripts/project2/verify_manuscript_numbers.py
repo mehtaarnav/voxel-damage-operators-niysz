@@ -20,6 +20,19 @@ P2 = os.path.join(ROOT, "out", "project2")
 TEX = open(os.path.join(ROOT, "out", "writeup", "manuscript.tex"),
            encoding="utf8").read()
 
+# The primer, the README and the HTML build quote the same quantities as the
+# paper. They drifted once, because only the manuscript was checked here, so
+# they are checked too: a value corrected in one document and not the others is
+# exactly the failure this script exists to catch.
+DOCS = {}
+for name, rel in (("primer", ("out", "writeup", "PRIMER_voxel_operators.md")),
+                  ("readme", ("README.md",)),
+                  ("html", ("out", "writeup", "primer.html"))):
+    try:
+        DOCS[name] = open(os.path.join(ROOT, *rel), encoding="utf8").read()
+    except FileNotFoundError:
+        DOCS[name] = ""
+
 checks = []
 
 
@@ -89,6 +102,18 @@ check("fine gains most from 26-connectivity", gain.idxmax() == "fine")
 check("fine gain is +0.0004", round(gain["fine"], 4) == 0.0004, "0.0004")
 check("medium and coarse gain nothing",
       round(gain["medium"], 4) == 0 and round(gain["coarse"], 4) == 0)
+
+# ---- superseded values must not survive anywhere ---------------------------
+for stale, where in (("5.07", "counterfactual contact ratio"),
+                     ("208,180", "plateau count"),
+                     (r"208\,180", "plateau count"),
+                     ("92.8", "removed-adjacent-to-YSZ share"),
+                     ("0.00955", "tie-break contrast"),
+                     ("factor of 40", "tie-break factor"),
+                     ("22.5346", "fine TPB endpoint")):
+    for doc, text in list(DOCS.items()) + [("manuscript", TEX)]:
+        checks.append((f"superseded {stale} absent from {doc} ({where})",
+                       stale not in text, True, None))
 
 # ---- claims that must NOT reappear ----------------------------------------
 for dead in ("accepts no move", "accepts zero", "no move accepted",
