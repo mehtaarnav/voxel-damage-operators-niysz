@@ -36,13 +36,12 @@ def main():
         ax.errorbar(s.index, s["mean"], yerr=s["std"], color=COLOR[a],
                     marker=MARKER[a], ms=3.0, lw=1.1, capsize=1.8,
                     elinewidth=0.6, label=a, zorder=3)
-    ax.set_xlabel(r"$\Rni$ threshold".replace(r"\Rni",
-                                              r"$R_{\mathrm{Ni}}$"))
     ax.set_xlabel(r"$R_{\mathrm{Ni}}$ threshold")
     ax.set_ylabel("damage rounds to transition")
     ax.invert_xaxis()
     ax.legend(loc="upper left")
-    ax.set_title("the fine anode never fails first")
+    # No title: the axes already name both quantities, and the claim the panel
+    # supports belongs in the caption, not inside the plot.
     tidy(ax)
     fig.tight_layout()
     for ext in ("pdf", "png"):

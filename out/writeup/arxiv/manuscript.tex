@@ -538,12 +538,17 @@ the pruning step nothing to remove.
   \label{fig:tpb}
 \end{figure}
 
-The fourth failure mode is in the same runs. TPB density is multiplied by
-14.8, 12.3 and 7.4 at the first damage round before it collapses to
-\SIrange{4.8}{10.2}{\percent} of pristine by the eighth (Fig.~\ref{fig:tpb}). The mechanism is
-discretisation: removing single voxels
-from a surface roughens it at the voxel scale, and each newly exposed
-nickel/pore facet that happens to touch zirconia adds triple line.
+The fourth failure mode is in the same runs, and it inverts the quantity the
+electrode is built around before destroying it. A voxel-scale operator does not
+begin by removing triple line; it begins by manufacturing it, because removing
+single voxels roughens a surface at the grid scale and every newly exposed
+nickel/pore facet that happens to touch zirconia adds junction. Any TPB
+conclusion drawn during that excursion reports the discretisation and not the
+electrode.
+
+The excursion is large. TPB density is multiplied by 14.8, 12.3 and 7.4 at the
+first damage round before it collapses to \SIrange{4.8}{10.2}{\percent} of
+pristine by the eighth (Fig.~\ref{fig:tpb}).
 
 Removal is not the cause, and neither is a loose volume budget. A
 volume-conserving redistribution operator run on synthetic structures showed
@@ -1295,9 +1300,16 @@ through periodic wrap, reversed axis extents that made one audit's cut
 fractions provisional until re-run, a validity check that never compared
 against the pristine state and printed a pass on a failing run, a
 pre-registered secondary-outcome rule that selected a saturating measurement
-point, and an internally contradictory plan specifying both Metropolis
-acceptance and strict area monotonicity---are logged in the run reports at the
-point where each was found.
+point, an internally contradictory plan specifying both Metropolis acceptance
+and strict area monotonicity, and---the one that changed a headline
+result---a neighbour count taken with a structuring element that includes the
+centre voxel, which biased a comparison across two voxel populations by one and
+made an operator that accepts \SI{96}{\percent} of proposals appear to accept
+none---are logged in the run reports at the point where each was found. Two
+further specifications were found to be load-bearing rather than incidental
+and are now part of the operator definition rather than of its implementation:
+sequential rather than batched application, and random rather than
+insertion-order tie-breaking among moves of equal $\Delta A$.
 \endgroup
 
 %======================================================================

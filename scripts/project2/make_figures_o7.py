@@ -58,7 +58,7 @@ def figure7():
     a.yaxis.set_minor_formatter(NullFormatter())
     a.set_xlabel(r"accepted moves ($\times 10^{3}$)")
     a.set_ylabel("value / pristine value")
-    a.set_title("gate satisfied, triple line manufactured")
+    a.set_title("gated quantity and TPB, indexed to pristine")
     a.legend(loc="center right")
     a.annotate(f"$\\times{tr.tpb_ratio.iloc[-1]:.2f}$",
                xy=(tr.accepted.iloc[-1] / 1e3, tr.tpb_ratio.iloc[-1]),
@@ -80,7 +80,7 @@ def figure7():
     b.set_xticks(sorted(hs.dA))
     b.set_xlabel(r"$\Delta A$ (exposed faces)")
     b.set_ylabel("share of accepted moves (\\%)")
-    b.set_title("four in five moves cost nothing")
+    b.set_title("cost of accepted moves")
     b.set_ylim(0, 95)
     tidy(b, minor_x=False)
     panel(b, "b")
@@ -107,7 +107,7 @@ def figure8():
     ax.set_xticklabels(labels, fontsize=7)
     ax.set_ylabel("TPB / pristine TPB")
     ax.set_ylim(0, 6.1)
-    ax.set_title("where the inflation comes from")
+    ax.set_title("TPB by group of re-applied moves")
     tidy(ax, minor_x=False)
     fig.tight_layout()
     save(fig, "fig9_counterfactual")

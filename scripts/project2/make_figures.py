@@ -216,7 +216,7 @@ for i, a in enumerate(ANODES):
                zorder=4)
 ax[1].set_ylim(7.1, 10.9)
 ax[1].set_ylabel("erosion rounds to $R_{\\mathrm{Ni}}<0.5$")
-ax[1].set_title("simulation: fine last")
+ax[1].set_title("simulation")
 
 for a in ANODES:
     s = tr[tr.anode == a].groupby("roi").agg(
