@@ -87,17 +87,34 @@ class SeqGreedy:
         front = (~ni) & (~ysz) & (nb >= 1) & interior
         self.bs = [None] * 7          # surface Ni, by nN
         self.bf = [None] * 7          # pore front, by nN
+        self.ver = np.zeros(ni.size, dtype=np.int32)
         for v in range(7):
-            self.bs[v] = list(np.flatnonzero((surf & (nb == v)).ravel()))
-            self.bf[v] = list(np.flatnonzero((front & (nb == v)).ravel()))
+            self.bs[v] = [(int(f), 0) for f in
+                          np.flatnonzero((surf & (nb == v)).ravel())]
+            self.bf[v] = [(int(f), 0) for f in
+                          np.flatnonzero((front & (nb == v)).ravel())]
         self.n_surf0 = int(surf.sum())
 
     def _push(self, flat):
+        """Register a voxel in its current bucket, superseding any earlier entry.
+
+        Entries carry a version stamp. Pushing bumps the voxel's version, which
+        makes every earlier entry for that voxel stale wherever it sits, so at
+        most one live entry per voxel exists at any time.
+
+        Without this, a voxel whose neighbour count drifts away and back gains a
+        second entry that is still valid, and _sample -- which draws uniformly
+        over ENTRIES -- would then favour it in proportion to how often it had
+        been touched. That is not the frozen policy, which is uniform over
+        valid candidates.
+        """
+        self.ver[flat] += 1
+        stamp = self.ver[flat]
         v = int(self.nb.flat[flat])
         if self._is_surf(flat):
-            self.bs[v].append(flat)
+            self.bs[v].append((flat, stamp))
         if self._is_front(flat):
-            self.bf[v].append(flat)
+            self.bf[v].append((flat, stamp))
 
     # ------------------------------------------------------ tie-breaking
     # FROZEN POLICY (do not change without re-freezing the pre-registration):
@@ -125,8 +142,9 @@ class SeqGreedy:
         while bucket:
             i = (len(bucket) - 1 if self.tiebreak == "lifo"
                  else int(self.rng.integers(len(bucket))))
-            f = bucket[i]
-            if validator(f) and int(self.nb.flat[f]) == v:
+            f, stamp = bucket[i]
+            if (stamp == self.ver[f] and validator(f)
+                    and int(self.nb.flat[f]) == v):
                 return f, i
             bucket[i] = bucket[-1]        # O(1) swap-remove
             bucket.pop()
@@ -167,7 +185,25 @@ class SeqGreedy:
         return out
 
     # ------------------------------------------------------------------- move
-    def step(self):
+    def step(self, _tries=64):
+        """One move. Returns False only when no admissible move remains.
+
+        If the extremal source has no non-adjacent partner, that source is
+        retired and the next is tried. Returning False there would end the whole
+        run while valid moves elsewhere were still available.
+        """
+        for _ in range(_tries):
+            moved = self._try_one()
+            if moved is not None:
+                return moved
+        return False
+
+    def _retire(self, flat):
+        """Drop a voxel from consideration until something touches it again."""
+        self.ver[flat] += 1
+
+    def _try_one(self):
+        """True/False if a move was decided, None if this source was retired."""
         a, va, _ = self._pop_min_surf()
         if a is None:
             return False
@@ -190,13 +226,16 @@ class SeqGreedy:
             bucket = self.bf[vcand]    # remove so the next draw differs
             bucket[idx] = bucket[-1]
             bucket.pop()
-            held.append((cand, vcand))
-            if len(held) > 8:          # bounded: a has at most 6 neighbours
+            held.append((cand, vcand, self.ver[cand]))
+            if len(held) > 6:          # a has at most six 6-neighbours
                 break
-        for f, v in held:
-            self.bf[v].append(f)
+        for f, v, stamp in held:
+            self.bf[v].append((f, stamp))
         if b is None:
-            return False
+            # This source cannot be paired. Retire it and let the caller try
+            # the next one rather than ending the run.
+            self._retire(a)
+            return None
         self.proposed += 1
         dA = 2 * (va - vb)
         if dA > 0 or (self.strict and dA == 0):

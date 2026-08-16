@@ -284,11 +284,20 @@ def apply_o5(ni_mask, ysz_mask, n_rounds, seed,
 
 
 def ni_ysz_interface_area_vox(ni_mask, ysz_mask):
-    """Count of Ni/YSZ shared voxel faces -- the perimeter TPB lives on."""
+    """Shared Ni/YSZ faces, free boundary.
+
+    Uses slicing rather than np.roll: roll wraps the domain, counting a Ni
+    voxel on one face as adjacent to a YSZ voxel on the opposite face. That is
+    the same defect corrected in tpb_density_um2 above.
+    """
     n = 0
     for ax in range(3):
-        for sh in (1, -1):
-            n += int((ni_mask & np.roll(ysz_mask, sh, axis=ax)).sum())
+        lo = [slice(None)] * 3
+        hi = [slice(None)] * 3
+        lo[ax] = slice(0, -1)
+        hi[ax] = slice(1, None)
+        n += int((ni_mask[tuple(lo)] & ysz_mask[tuple(hi)]).sum())
+        n += int((ni_mask[tuple(hi)] & ysz_mask[tuple(lo)]).sum())
     return n
 
 
@@ -344,13 +353,6 @@ def apply_o6(ni_mask, ysz_mask, n_rounds, seed, p_erode=O1_P_ERODE):
 # potential) and joins concave necks -- the direction that reduces surface area
 # at fixed volume.
 O5V2_P_COARSEN = 0.03
-
-
-def _mean_curvature(ni, sites):
-    """k = (#pore 6-neighbours) - (#Ni 6-neighbours); + convex, - concave."""
-    nb = ndi.convolve(ni.astype(np.int8), STRUCT6.astype(np.int8),
-                      mode="constant", cval=0)
-    return (6 - 2 * nb)[sites]
 
 
 def apply_o5v2(ni_mask, ysz_mask, n_rounds, seed,
@@ -425,8 +427,14 @@ def apply_o5v2(ni_mask, ysz_mask, n_rounds, seed,
 # area-neutral moves dominate on real data.
 # Curvature RANK was a proxy for this; the identity is exact. dV = 0 by
 # construction (one voxel out, one in). gamma=1.0, lambda enforced structurally,
-# kT=0 so no dA>0 move is ever accepted -- gate (ii) cannot fail by construction
-# up to the non-adjacency condition, which is enforced below.
+# kT=0, so no INDIVIDUAL move with dA>0 is accepted. That is not the same as
+# the round being area-non-increasing. Candidates are ranked once against a
+# neighbour field that is not updated as the round's k_move swaps are applied,
+# so per-move guarantees do not compose: measured on the recovered test body
+# the exposed area RISES (0.45052 -> 0.46365 at n=1). This is the batching
+# result reported in the manuscript, not an oversight. Use cmlib.seqgreedy
+# for exact sequential semantics; this function is retained to reproduce the
+# published batched figure.
 O5V2B_GAMMA, O5V2B_KT = 1.0, 0.0
 
 

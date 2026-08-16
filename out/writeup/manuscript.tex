@@ -259,7 +259,7 @@ part of the rule, not an implementation detail: area-neutral moves dominate,
 so the achieved area reduction depends on which of many equal-cost moves is
 taken. At a matched budget of 1220 moves on the test body, a
 last-in-first-out order reaches $\Delta \Sspec = -0.00024$ where the frozen
-randomised policy reaches $-0.00955$, a factor of 40
+randomised policy reaches $-0.00692$, a factor of 29
 (\texttt{o7\_tiebreak\_sensitivity.py}).
 
 Counting convention. The neighbour count $\nb$ in Eq.~\eqref{eq:dA} excludes
@@ -566,7 +566,7 @@ The reason is that the two quantities are not sensitive to the same thing.
 Specific surface area is a facet count over the nickel/pore interface; TPB is a
 one-dimensional junction count where three phases meet. Under the swap rule,
 about \SI{80}{\percent} of accepted moves carry $\Delta A = 0$ exactly---on the
-fine anode, $208\,180$ of $258\,870$---and are therefore unpriced by an area
+fine anode, $207\,369$ of $258\,870$---and are therefore unpriced by an area
 criterion (Fig.~\ref{fig:gatetpb}b). An area budget does not constrain the
 degree of freedom that governs TPB.
 
@@ -575,14 +575,14 @@ the measurement is more specific than the guess. The rule removes nickel from
 sites with few nickel neighbours, and nickel is thinnest against its own kind
 exactly where it meets zirconia, since a voxel on that contact is backed by
 ceramic rather than by more nickel. On the fine anode
-\SI{92.8}{\percent} of removed voxels are adjacent to YSZ: the operator strips
+\SI{93.0}{\percent} of removed voxels are adjacent to YSZ: the operator strips
 nickel off the ceramic. Added material, by contrast, lands almost anywhere,
-only \SI{3.2}{\percent} of it beside YSZ, and arrives as
-\num{34753} fragments of median size two voxels.
+only \SI{3.3}{\percent} of it beside YSZ, and arrives as
+\num{34500} fragments of median size two voxels.
 
 Re-applying the two groups separately to the pristine structure separates their
 contributions (Fig.~\ref{fig:counterfactual}). The contact-adjacent moves alone
-reproduce the whole artifact, $\times 5.07$ against $\times 5.03$ for the full
+reproduce the whole artifact, $\times 5.03$ against $\times 4.99$ for the full
 set; every other move, which is \SI{97}{\percent} of the added material, gives
 $\times 1.04$. The mechanism is therefore specific rather than diffuse:
 the area criterion rewards precisely the moves that pit the nickel--zirconia
@@ -817,7 +817,7 @@ field, the moves interact, and the per-move guarantees do not sum.
 Removing that confound does not rescue the rule. A strictly sequential
 variant---one move, neighbour field recomputed, repeat---does lower the area,
 and on all three real electrodes it passes the strict-decrease gate: specific
-surface area falls by \num{-0.00560}, \num{-0.00251} and \num{-0.00468} from
+surface area falls by \num{-0.00568}, \num{-0.00251} and \num{-0.00470} from
 pristine values of 0.15696, 0.11670 and 0.13991 for the fine, medium and coarse
 anodes, that is by \SIrange{2.2}{3.6}{\percent}, at exact volume conservation.
 The rule is permissive rather than selective on real data: essentially every
@@ -831,10 +831,10 @@ $5.0$, $4.9$ and $3.7$ for the fine, medium and coarse electrodes, and the
 retained percolating fraction $R_{\mathrm{Ni}}$ rises rather than falls.
 
 The mechanism is the area-neutral plateau. Roughly $80\%$ of accepted moves
-carry $\Delta A = 0$ exactly: on the fine electrode, $208\,180$ of $258\,870$.
+carry $\Delta A = 0$ exactly: on the fine electrode, $207\,369$ of $258\,870$.
 They are free under a surface-area criterion and are therefore unconstrained,
 and they concentrate where nickel is thinnest against its own kind, which is
-the contact with zirconia; \SI{92.8}{\percent} of removed voxels sit against
+the contact with zirconia; \SI{93.0}{\percent} of removed voxels sit against
 YSZ, and re-applying only those moves reproduces the entire inflation. A
 monotone-area gate cannot detect this, because the area genuinely does decrease
 while the microstructure degrades in a way the criterion does not measure.
@@ -867,7 +867,7 @@ particular implementation goes wrong.
   area-decreasing swap, volume conserved exactly. (a) Both quantities are
   divided by their pristine values so that they share one axis: specific
   surface area, the gated quantity, falls \SI{3.6}{\percent}, while
-  triple-phase-boundary density rises by a factor of $5.03$. (b) Why the gate
+  triple-phase-boundary density rises by a factor of $4.99$. (b) Why the gate
   does not object. Accepted moves by their cost in exposed faces; four in five
   carry $\Delta A = 0$ exactly and are unpriced by the criterion. Data:
   \texttt{o7\_trajectory.csv}, \texttt{o7\_da\_histogram.csv}.}
@@ -1183,6 +1183,19 @@ truncate particles at the faces. That penalty also falls unevenly, bearing
 hardest on the anode whose particles are smallest relative to the region, again
 the fine one. Both conventions push in the same direction on the same sample,
 and both are frozen rather than tuned, but neither was varied.
+
+Three further conventions are recorded because they bear on how the evidence
+should be read rather than on the numbers themselves. The demonstration of the
+curvature-rank mode applies \num{61} moves per round from a single ranking, so
+its measured area rise is confounded with the batching that mode~6 identifies;
+the analytic point, that a curvature rank is not $\Delta A$, does not depend on
+that measurement. Operators differ in whether domain-face voxels may move: the
+sequential rule excludes them, the batched one does not, which matters most for
+the smallest regions. And the erosion operator retains only the largest
+connected component, which is not guaranteed to be nested across rounds if the
+largest component ever changes identity; it does not do so here, all 27
+recorded $\Rni$ curves being monotone, but the guarantee is empirical rather
+than structural.
 
 The open question is not which operator to try next. It is what class of
 mechanism could produce loss of long-range nickel connectivity together with

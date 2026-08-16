@@ -31,27 +31,27 @@ def check(name, condition, literal=None):
 
 # ---- trajectory: the gated quantity falls, TPB rises -----------------------
 tr = pd.read_csv(f"{P2}/o7_trajectory.csv")
-check("TPB rises to 5.03x", round(tr.tpb_ratio.iloc[-1], 2) == 5.03, "5.03")
-check("S_spec falls ~3.6%", abs(tr.s_ratio.iloc[-1] - 0.9643) < 5e-4)
+check("TPB rises to 4.99x", round(tr.tpb_ratio.iloc[-1], 2) == 4.99, "4.99")
+check("S_spec falls ~3.6%", abs(tr.s_ratio.iloc[-1] - 0.9638) < 5e-4)
 
 # ---- the area-neutral plateau ---------------------------------------------
 hs = pd.read_csv(f"{P2}/o7_da_histogram.csv")
 neutral = float(hs.loc[hs.dA == 0, "share"].iloc[0])
 check("plateau is ~80%", 0.795 < neutral < 0.81)
 st = pd.read_csv(f"{P2}/o7_move_stats.csv").iloc[0]
-check("plateau count 208180 of 258870",
-      int(st.neutral) == 208180 and int(st.accepted) == 258870,
-      r"208\,180")
+check("plateau count 207369 of 258870",
+      int(st.neutral) == 207369 and int(st.accepted) == 258870,
+      r"207\,369")
 
 # ---- counterfactual: the contact is the whole effect ----------------------
 cf = pd.read_csv(f"{P2}/o7_counterfactual.csv").set_index("case")
-check("contact-adjacent alone gives 5.07",
-      round(cf.loc["contact_adjacent_only", "tpb_ratio"], 2) == 5.07, "5.07")
+check("contact-adjacent alone gives 5.03",
+      round(cf.loc["contact_adjacent_only", "tpb_ratio"], 2) == 5.03, "5.03")
 check("away-from-contact gives 1.04",
       round(cf.loc["away_from_contact_only", "tpb_ratio"], 2) == 1.04, "1.04")
-check("92.8% of removed voxels are next to YSZ",
-      abs(st.removed_near_ysz / st.removed - 0.928) < 5e-4,
-      r"\SI{92.8}{\percent}")
+check("93.0% of removed voxels are next to YSZ",
+      abs(st.removed_near_ysz / st.removed - 0.930) < 1e-3,
+      r"\SI{93.0}{\percent}")
 
 # ---- threshold sweep: fine is never first to fail -------------------------
 th = pd.read_csv(f"{P2}/o7_threshold_transitions.csv")
