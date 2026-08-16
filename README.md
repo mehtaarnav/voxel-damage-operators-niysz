@@ -145,9 +145,7 @@ the primer are the author's own text and figures.
 
 To cite the software, see `CITATION.cff`, or the archived release directly:
 [10.5281/zenodo.21969405](https://doi.org/10.5281/zenodo.21969405) resolves to
-the latest version, and
-[10.5281/zenodo.21969406](https://doi.org/10.5281/zenodo.21969406) is v1.0.0,
-the state accompanying the manuscript. To cite the findings, cite the paper.
+the latest version,. To cite the findings, cite the paper.
 
 ## What reproduces from a clean checkout
 
