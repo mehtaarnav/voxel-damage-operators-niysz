@@ -569,9 +569,28 @@ Specific surface area is a facet count over the nickel/pore interface; TPB is a
 one-dimensional junction count where three phases meet. Under the swap rule,
 about \SI{80}{\percent} of accepted moves carry $\Delta A = 0$ exactly---on the
 fine anode, $208\,180$ of $258\,870$---and are therefore unpriced by an area
-criterion. Those moves are free to scatter nickel across the three-phase
-junction, and that is what inflates the junction count. An area budget does not
-constrain the degree of freedom that governs TPB.
+criterion (Fig.~\ref{fig:gatetpb}b). An area budget does not constrain the
+degree of freedom that governs TPB.
+
+Where those unpriced moves land is worth measuring rather than assuming, and
+the measurement is more specific than the guess. The rule removes nickel from
+sites with few nickel neighbours, and nickel is thinnest against its own kind
+exactly where it meets zirconia, since a voxel on that contact is backed by
+ceramic rather than by more nickel. On the fine anode
+\SI{92.8}{\percent} of removed voxels are adjacent to YSZ: the operator strips
+nickel off the ceramic. Added material, by contrast, lands almost anywhere,
+only \SI{3.2}{\percent} of it beside YSZ, and arrives as
+\num{34753} fragments of median size two voxels.
+
+Re-applying the two groups separately to the pristine structure separates their
+contributions (Fig.~\ref{fig:counterfactual}). The contact-adjacent moves alone
+reproduce the whole artifact, $\times 5.07$ against $\times 5.03$ for the full
+set; every other move, which is \SI{97}{\percent} of the added material, moves
+TPB by four percent. The mechanism is therefore specific rather than diffuse:
+the area criterion rewards precisely the moves that pit the nickel--zirconia
+contact patch, and the triple line lives on that patch's perimeter. The gate
+prices the nickel/pore interface; the damage happens on the nickel/zirconia
+interface, which the gate never inspects.
 
 Forbidding those moves reduces the artifact without removing it, and the
 residue is the more useful number. Tightening the rule to strict inequality,
@@ -766,9 +785,11 @@ retained percolating fraction $R_{\mathrm{Ni}}$ rises rather than falls.
 The mechanism is the area-neutral plateau. Roughly $80\%$ of accepted moves
 carry $\Delta A = 0$ exactly: on the fine electrode, $208\,180$ of $258\,870$.
 They are free under a surface-area criterion and are therefore unconstrained,
-scattering nickel across the three-phase junction. A monotone-area gate cannot
-detect this, because the area genuinely does decrease while the microstructure
-degrades in a way the criterion does not measure.
+and they concentrate where nickel is thinnest against its own kind, which is
+the contact with zirconia; \SI{92.8}{\percent} of removed voxels sit against
+YSZ, and re-applying only those moves reproduces the entire inflation. A
+monotone-area gate cannot detect this, because the area genuinely does decrease
+while the microstructure degrades in a way the criterion does not measure.
 
 That is the whole of the argument, and its consequence is a structural one.
 Rayleigh-type break-up of a solid cylinder by surface diffusion is a
@@ -789,6 +810,32 @@ its own validity criterion. The two cannot hold together. This is the sixth
 and most general of the failure modes, and unlike the other five it is a
 statement about what an operator class can represent rather than about how a
 particular implementation goes wrong.
+
+\begin{figure*}[tb]
+  \centering
+  \includegraphics[width=\linewidth]{fig7_gate_vs_tpb.pdf}
+  \caption{The validity criterion is satisfied while the quantity of interest
+  is destroyed. Fine anode, \num{67} million voxels, sequential
+  area-decreasing swap, volume conserved exactly. (a) Both quantities are
+  divided by their pristine values so that they share one axis: specific
+  surface area, the gated quantity, falls \SI{3.6}{\percent}, while
+  triple-phase-boundary density rises by a factor of $5.03$. (b) Why the gate
+  does not object. Accepted moves by their cost in exposed faces; four in five
+  carry $\Delta A = 0$ exactly and are unpriced by the criterion. Data:
+  \texttt{o7\_trajectory.csv}, \texttt{o7\_da\_histogram.csv}.}
+  \label{fig:gatetpb}
+\end{figure*}
+
+\begin{figure}[tb]
+  \centering
+  \includegraphics[width=\linewidth]{fig8_counterfactual.pdf}
+  \caption{Where the triple-line inflation comes from, by re-applying the two
+  groups of moves separately to the pristine structure. Moves that touch the
+  nickel--zirconia contact reproduce the whole artifact on their own; every
+  other move, \SI{97}{\percent} of the added material, changes TPB by four
+  percent. Data: \texttt{o7\_counterfactual.csv}.}
+  \label{fig:counterfactual}
+\end{figure}
 
 Its generality does not rest on the test body. Equation~\eqref{eq:dA} is exact
 on any 6-connected lattice, and the local-minimum argument follows from two
