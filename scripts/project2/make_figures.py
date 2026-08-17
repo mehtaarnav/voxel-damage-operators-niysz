@@ -225,7 +225,7 @@ for a in ANODES:
     ax[2].scatter(s.spec_surface, s.transition, s=22, color=COLOR[a],
                   marker=MARKER[a], label=a)
 ax[2].set_xlabel("specific Ni surface area (vox$^{-1}$)")
-ax[2].set_ylabel("erosion rounds to $R_{\mathrm{Ni}}<0.5$")
+ax[2].set_ylabel(r"erosion rounds to $R_{\mathrm{Ni}}<0.5$")
 ax[2].set_title("no rate dependence")
 ax[2].set_xlim(0.108, 0.172)
 ax[2].set_ylim(7.1, 10.9)
