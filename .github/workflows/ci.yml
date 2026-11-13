@@ -24,7 +24,10 @@ on:
 
 jobs:
   verify:
-    runs-on: ubuntu-latest
+    # Pinned: ubuntu-latest moved to 26.04, which has no build of the pinned
+    # Python 3.12.5, and an OS change would also move FreeType under the figure
+    # comparison. 3.12.5 is published for 20.04, 22.04 and 24.04.
+    runs-on: ubuntu-24.04
     steps:
       - uses: actions/checkout@v4
 
