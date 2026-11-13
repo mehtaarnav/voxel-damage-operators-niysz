@@ -27,6 +27,6 @@ perfect pristine connectivity misrepresent electrodes carrying
 1.2-11.2% disconnected nickel; a jittered lattice cuts at
 one cross-section with zero variance where real networks fail at
 0.5-3% of throats. One check costs a line of code, since an operator whose TPB retention exceeds
-unity is roughening rather than coarsening.
+unity in a fixed volume is roughening rather than coarsening.
 
-[1889 characters; arXiv abstract limit is 1920]
+[1907 characters; arXiv abstract limit is 1920]
