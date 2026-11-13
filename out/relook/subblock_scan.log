@@ -1,0 +1,15 @@
+fine_pre: 30 blocks [98s]
+medium_pre: 60 blocks [90s]
+coarse_pre: 64 blocks [42s]
+fine_post: 20 blocks [42s]
+medium_post: 40 blocks [80s]
+coarse_post: 40 blocks [92s]
+            phi_ni        phi_ysz        phi_pore        pspan_ni        pspan_ysz           tpb        sv_niysz        open_frac       
+              mean    std    mean    std     mean    std     mean    std      mean    std   mean    std     mean    std      mean    std
+sample                                                                                                                                  
+coarse_post  0.277  0.139   0.317  0.124    0.406  0.100    0.614  0.340     0.252  0.283  0.882  0.306    0.360  0.134     0.051  0.014
+coarse_pre   0.230  0.066   0.375  0.104    0.395  0.082    0.541  0.317     0.592  0.332  1.481  0.316    0.523  0.115     0.081  0.015
+fine_post    0.224  0.077   0.311  0.034    0.465  0.050    0.431  0.292     0.832  0.219  2.763  0.362    0.602  0.141     0.089  0.012
+fine_pre     0.325  0.034   0.418  0.028    0.254  0.027    0.963  0.026     0.998  0.001  3.570  0.239    1.899  0.148     0.034  0.004
+medium_post  0.235  0.097   0.376  0.069    0.388  0.082    0.569  0.366     0.599  0.313  1.586  0.310    0.506  0.173     0.059  0.014
+medium_pre   0.252  0.063   0.384  0.081    0.363  0.061    0.723  0.290     0.913  0.130  2.128  0.267    0.871  0.137     0.057  0.008

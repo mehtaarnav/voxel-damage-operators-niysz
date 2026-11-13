@@ -103,6 +103,50 @@ check("fine gain is +0.0004", round(gain["fine"], 4) == 0.0004, "0.0004")
 check("medium and coarse gain nothing",
       round(gain["medium"], 4) == 0 and round(gain["coarse"], 4) == 0)
 
+# ---- swelling of the fine anode (relook) ----------------------------------
+vf = pd.read_csv(os.path.join(ROOT, "out", "phase2",
+                              "phase2_volume_fractions.csv")).set_index("sample")
+tp = pd.read_csv(os.path.join(ROOT, "out", "phase4",
+                              "phase4b_tpb_full_stacks.csv")).set_index("sample")
+
+
+def solid(s):
+    return vf.loc[s, "Ni_mine"] + vf.loc[s, "YSZ_mine"]
+
+
+check("fine Ni falls by factor 0.688",
+      round(vf.loc["fine_post", "Ni_mine"] / vf.loc["fine_pre", "Ni_mine"], 3)
+      == 0.688, "0.688")
+check("fine YSZ falls by factor 0.741",
+      round(vf.loc["fine_post", "YSZ_mine"] / vf.loc["fine_pre", "YSZ_mine"], 3)
+      == 0.741, "0.741")
+check("medium and coarse solid change < 8%",
+      all(abs(solid(f"{a}_post") / solid(f"{a}_pre") - 1) < 0.08
+          for a in ("medium", "coarse")), r"\SI{8}{\percent}")
+sx = solid("fine_post") / solid("fine_pre")
+check("fine TPB per solid 1.11 (this work)",
+      round(tp.loc["fine_post", "tpb_density_um-2"]
+            / tp.loc["fine_pre", "tpb_density_um-2"] / sx, 2) == 1.11, "1.11")
+check("fine TPB per solid 1.04 (published)",
+      round(tp.loc["fine_post", "tpb_published_total"]
+            / tp.loc["fine_pre", "tpb_published_total"] / sx, 2) == 1.04, "1.04")
+check("fine Ni per solid 0.433 -> 0.415",
+      round(vf.loc["fine_pre", "Ni_mine"] / solid("fine_pre"), 3) == 0.433
+      and round(vf.loc["fine_post", "Ni_mine"] / solid("fine_post"), 3) == 0.415,
+      "0.433 to 0.415")
+sb = pd.read_csv(os.path.join(ROOT, "out", "relook", "subblock_scan.csv"))
+of = sb.groupby("sample").open_frac
+check("fine pore-adjacent contact 0.034 -> 0.089",
+      round(of.mean()["fine_pre"], 3) == 0.034
+      and round(of.mean()["fine_post"], 3) == 0.089, "0.034 to 0.089")
+pooled = ((of.var()["fine_pre"] + of.var()["fine_post"]) / 2) ** 0.5
+check("fine shift is six within-stack SDs",
+      round((of.mean()["fine_post"] - of.mean()["fine_pre"]) / pooled) == 6,
+      "six within-stack standard deviations")
+check("medium and coarse pore-adjacent contact does not rise",
+      all(of.mean()[f"{a}_post"] / of.mean()[f"{a}_pre"] < 1.15
+          for a in ("medium", "coarse")))
+
 # ---- superseded values must not survive anywhere ---------------------------
 for stale, where in (("5.07", "counterfactual contact ratio"),
                      ("208,180", "plateau count"),
